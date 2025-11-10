@@ -1,0 +1,83 @@
+[
+  {
+    "header": "",
+    "items": [
+      {
+        "text": "Matériel",
+        "iconLib": "fa",
+        "icon": "FaTruckLoading",
+        "available": true,
+        "link": "/"
+      },
+      {
+        "text": "Attachement",
+        "iconLib": "fa",
+        "icon": "FaPaperclip",
+        "available": true,
+        "link": "/attachement"
+      },
+      {
+        "text": "Flotte",
+        "iconLib": "fa",
+        "icon": "FaRoute",
+        "available": true,
+        "link": "/flotte",
+        "submenu": [
+          {
+            "text": "Vue d'ensemble",
+            "available": true,
+            "link": "/flotte"
+          },
+          {
+            "text": "Flotte",
+            "available": true,
+            "link": "/flotte/ajout-flotte"
+          },
+          {
+            "text": "Documents Administratifs",
+            "available": true,
+            "link": "/flotte/documents"
+          },
+          {
+            "text": "Opérateurs",
+            "available": true,
+            "link": "/flotte/operateurs"
+          }
+        ]
+      },
+      {
+        "text": "Maintenance",
+        "iconLib": "fa",
+        "icon": "FaTools",
+        "available": true,
+        "link": "/maintenance",
+        "submenu": [
+          {
+            "text": "Preventive",
+            "available": true,
+            "link": "/maintenance/preventive"
+          },
+          {
+            "text": "Curative",
+            "available": true,
+            "link": "/maintenance/curative"
+          }
+        ]
+      },
+      {
+        "text": "Notifications",
+        "iconLib": "fa",
+        "icon": "FaBell",
+        "available": true,
+        "link": "/notifications"
+      },
+      {
+        "text": "Utilisateurs",
+        "iconLib": "fa",
+        "icon": "FaUsers",
+        "available": true,
+        "link": "/utilisateurs"
+      }
+    ]
+  }
+]
