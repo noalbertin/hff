@@ -31,14 +31,14 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import DeleteIcon from '@mui/icons-material/Delete'
 import FileTextIcon from '@mui/icons-material/Description'
-import BuildIcon from '@mui/icons-material/Build'
-import HandymanIcon from '@mui/icons-material/Handyman'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import InfoIcon from '@mui/icons-material/Info'
 import WarningIcon from '@mui/icons-material/Warning'
 import ErrorIcon from '@mui/icons-material/Error'
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar'
 import DoneAllIcon from '@mui/icons-material/DoneAll'
+import EventIcon from '@mui/icons-material/Event'
+import EngineeringIcon from '@mui/icons-material/Engineering'
 import api from '../../../utils/axios'
 import ConfirmationDialog from '../../../components/ui/ConfirmationDialog'
 import { useAuthStore, selectUser } from '../../../store/auth'
@@ -58,6 +58,10 @@ const NotificationView = () => {
     urgent: 0,
     attention: 0,
     info: 0,
+    documents: 0,
+    maintenance_preventive: 0,
+    maintenance_curative: 0,
+    locations: 0,
   })
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
@@ -107,8 +111,14 @@ const NotificationView = () => {
       await api.post('/notifications/generate')
       fetchNotifications()
       fetchStatistics()
+      setSnackbarMessage('Notifications générées avec succès')
+      setSnackbarSeverity('success')
+      setOpenSnackbar(true)
     } catch (error) {
       console.error('Erreur génération:', error)
+      setSnackbarMessage('Erreur lors de la génération')
+      setSnackbarSeverity('error')
+      setOpenSnackbar(true)
     }
   }
 
@@ -127,19 +137,22 @@ const NotificationView = () => {
       await api.put('/notifications/read-all')
       fetchNotifications()
       fetchStatistics()
+      setSnackbarMessage('Toutes les notifications marquées comme lues')
+      setSnackbarSeverity('success')
+      setOpenSnackbar(true)
     } catch (error) {
       console.error('Erreur marquage global:', error)
+      setSnackbarMessage('Erreur lors du marquage')
+      setSnackbarSeverity('error')
+      setOpenSnackbar(true)
     }
   }
 
-  // Ouvre le dialogue de confirmation
-  // --- Ouvre la boîte de confirmation ---
   const handleDelete = (notif) => {
     setNotifToDelete(notif)
     setOpenDialog(true)
   }
 
-  // --- Confirme la suppression ---
   const confirmDelete = async () => {
     try {
       await api.delete(`/notifications/${notifToDelete.id_notification}`)
@@ -167,8 +180,8 @@ const NotificationView = () => {
   const getTypeIcon = (type) => {
     const icons = {
       document: <FileTextIcon sx={{ fontSize: 20 }} />,
-      pm: <BuildIcon sx={{ fontSize: 20 }} />,
-      maintenance: <HandymanIcon sx={{ fontSize: 20 }} />,
+      maintenance_preventive: <EventIcon sx={{ fontSize: 20 }} />,
+      maintenance_curative: <EngineeringIcon sx={{ fontSize: 20 }} />,
       location: <AttachMoneyIcon sx={{ fontSize: 20 }} />,
     }
     return icons[type] || <InfoIcon sx={{ fontSize: 20 }} />
@@ -177,11 +190,21 @@ const NotificationView = () => {
   const getTypeColor = (type) => {
     const colors = {
       document: '#ef4444',
-      pm: '#f59e0b',
-      maintenance: '#ec4899',
+      maintenance_preventive: '#3b82f6',
+      maintenance_curative: '#f59e0b',
       location: '#10b981',
     }
     return colors[type] || '#667eea'
+  }
+
+  const getTypeLabel = (type) => {
+    const labels = {
+      document: 'Document',
+      maintenance_preventive: 'Préventive',
+      maintenance_curative: 'Curative',
+      location: 'Location',
+    }
+    return labels[type] || type
   }
 
   const getPriorityChip = (priorite) => {
@@ -467,6 +490,54 @@ const NotificationView = () => {
           </Grid>
         </Grid>
 
+        {/* Statistiques par type */}
+        {/* <Grid container spacing={3} sx={{ mb: 3 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="Documents"
+              value={statistics.documents || 0}
+              icon={
+                <FileTextIcon sx={{ fontSize: 28, color: '#ef4444' }} />
+              }
+              color="#ef4444"
+              bgColor="#fee2e2"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="M. Préventive"
+              value={statistics.maintenance_preventive || 0}
+              icon={
+                <EventIcon sx={{ fontSize: 28, color: '#3b82f6' }} />
+              }
+              color="#3b82f6"
+              bgColor="#dbeafe"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="M. Curative"
+              value={statistics.maintenance_curative || 0}
+              icon={
+                <EngineeringIcon sx={{ fontSize: 28, color: '#f59e0b' }} />
+              }
+              color="#f59e0b"
+              bgColor="#fed7aa"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="Locations"
+              value={statistics.locations || 0}
+              icon={
+                <AttachMoneyIcon sx={{ fontSize: 28, color: '#10b981' }} />
+              }
+              color="#10b981"
+              bgColor="#dcfce7"
+            />
+          </Grid>
+        </Grid> */}
+
         {/* Filtres */}
         <Card
           elevation={0}
@@ -489,6 +560,7 @@ const NotificationView = () => {
               </Box>
 
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', flex: 1 }}>
+                
                 {/* Filtre Lu/Non Lu */}
                 <Box>
                   <Typography
@@ -543,35 +615,33 @@ const NotificationView = () => {
                     Type
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                    {['all', 'document', 'pm', 'maintenance', 'location'].map(
-                      (type) => (
-                        <Chip
-                          key={type}
-                          label={
-                            type === 'all'
-                              ? 'Tous'
-                              : type === 'document'
-                              ? 'Documents'
-                              : type === 'pm'
-                              ? 'PM'
-                              : type === 'maintenance'
-                              ? 'Maintenance'
-                              : 'Location'
-                          }
-                          onClick={() => setFilters({ ...filters, type: type })}
-                          sx={{
+                    {[
+                      'all',
+                      'document',
+                      'maintenance_preventive',
+                      'maintenance_curative',
+                      'location',
+                    ].map((type) => (
+                      <Chip
+                        key={type}
+                        label={
+                          type === 'all'
+                            ? 'Tous'
+                            : getTypeLabel(type)
+                        }
+                        onClick={() => setFilters({ ...filters, type: type })}
+                        sx={{
+                          bgcolor:
+                            filters.type === type ? '#667eea' : '#f1f5f9',
+                          color: filters.type === type ? '#fff' : '#475569',
+                          fontWeight: 600,
+                          '&:hover': {
                             bgcolor:
-                              filters.type === type ? '#667eea' : '#f1f5f9',
-                            color: filters.type === type ? '#fff' : '#475569',
-                            fontWeight: 600,
-                            '&:hover': {
-                              bgcolor:
-                                filters.type === type ? '#5568d3' : '#e2e8f0',
-                            },
-                          }}
-                        />
-                      )
-                    )}
+                              filters.type === type ? '#5568d3' : '#e2e8f0',
+                          },
+                        }}
+                      />
+                    ))}
                   </Box>
                 </Box>
 
@@ -717,6 +787,12 @@ const NotificationView = () => {
                           sx={{ fontWeight: 600, color: '#1e293b' }}
                         >
                           {notif.titre}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{ color: '#64748b', display: 'block', mt: 0.5 }}
+                        >
+                          {getTypeLabel(notif.type)}
                         </Typography>
                       </TableCell>
                       <TableCell>
