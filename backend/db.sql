@@ -735,34 +735,3 @@ STARTS (CURDATE() + INTERVAL 1 DAY + INTERVAL 6 HOUR)
 DO
   CALL generer_notifications();
 
--- ========================================
--- COMMANDES UTILES
--- ========================================
-
--- Voir tous les triggers créés
--- SHOW TRIGGERS;
-
--- Supprimer tous les triggers
--- DROP TRIGGER IF EXISTS after_insert_maintenance_preventive;
--- DROP TRIGGER IF EXISTS after_update_maintenance_preventive;
--- DROP TRIGGER IF EXISTS after_insert_maintenance_curative;
--- DROP TRIGGER IF EXISTS after_update_maintenance_curative;
--- DROP TRIGGER IF EXISTS after_insert_attachement;
--- DROP TRIGGER IF EXISTS after_update_attachement;
--- DROP TRIGGER IF EXISTS after_insert_documents_administratifs;
--- DROP TRIGGER IF EXISTS after_update_documents_administratifs;
-
--- Vérifier l'event scheduler
--- SHOW VARIABLES LIKE 'event_scheduler';
-
--- Voir tous les events
--- SHOW EVENTS;
-
--- Désactiver l'event
--- ALTER EVENT generer_notifications_quotidien DISABLE;
-
--- Supprimer l'event
--- DROP EVENT IF EXISTS generer_notifications_quotidien;
-
--- Tester manuellement
--- CALL generer_notifications();
