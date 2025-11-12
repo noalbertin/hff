@@ -165,37 +165,6 @@ export const getUnreadCount = async (req, res) => {
   }
 }
 
-// Générer manuellement les notifications
-export const generateNotifications = async (req, res) => {
-  try {
-    // Appeler la procédure de génération
-    await db.query('CALL generer_notifications()')
-
-    // Récupérer le nombre de nouvelles notifications créées
-    const [countResult] = await db.query(`
-      SELECT COUNT(*) as new_count 
-      FROM notifications 
-      WHERE date_creation >= DATE_SUB(NOW(), INTERVAL 5 SECOND)
-    `)
-
-    const newCount = countResult[0].new_count
-
-    res.json({
-      success: true,
-      message: newCount > 0 
-        ? `${newCount} nouvelle(s) notification(s) générée(s)` 
-        : 'Aucune nouvelle notification à générer',
-      count: newCount,
-    })
-  } catch (error) {
-    console.error('Erreur generateNotifications:', error)
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors de la génération des notifications',
-      error: error.message,
-    })
-  }
-}
 
 // Obtenir les statistiques des notifications
 export const getStatistics = async (req, res) => {

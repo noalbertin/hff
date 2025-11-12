@@ -12,9 +12,6 @@ router.get('/count', notificationsController.getUnreadCount)
 // GET /api/notifications/statistics - Statistiques
 router.get('/statistics', notificationsController.getStatistics)
 
-// POST /api/notifications/generate - Générer manuellement
-router.post('/generate', notificationsController.generateNotifications)
-
 // PUT /api/notifications/:id/read - Marquer comme lue
 router.put('/:id/read', notificationsController.markAsRead)
 

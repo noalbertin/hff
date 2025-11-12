@@ -106,22 +106,6 @@ const NotificationView = () => {
     }
   }
 
-  const handleGenerate = async () => {
-    try {
-      await api.post('/notifications/generate')
-      fetchNotifications()
-      fetchStatistics()
-      setSnackbarMessage('Notifications générées avec succès')
-      setSnackbarSeverity('success')
-      setOpenSnackbar(true)
-    } catch (error) {
-      console.error('Erreur génération:', error)
-      setSnackbarMessage('Erreur lors de la génération')
-      setSnackbarSeverity('error')
-      setOpenSnackbar(true)
-    }
-  }
-
   const handleMarkAsRead = async (id) => {
     try {
       await api.put(`/notifications/${id}/read`)
@@ -394,22 +378,6 @@ const NotificationView = () => {
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
-
-              <Button
-                variant="contained"
-                startIcon={<RefreshIcon />}
-                onClick={handleGenerate}
-                sx={{
-                  bgcolor: 'rgba(255,255,255,0.2)',
-                  backdropFilter: 'blur(10px)',
-                  color: '#fff',
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
-                }}
-              >
-                Générer
-              </Button>
 
               {statistics.total > 0 && (
                 <Button
