@@ -165,7 +165,6 @@ export const getUnreadCount = async (req, res) => {
   }
 }
 
-
 // Obtenir les statistiques des notifications
 export const getStatistics = async (req, res) => {
   try {
