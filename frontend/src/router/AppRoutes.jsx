@@ -1,5 +1,4 @@
 import { Route, Routes, Navigate } from 'react-router-dom'
-import { DashboardPage } from '../views/DashboardPage'
 import Login from '../views/authentication/login'
 import Register from '../views/authentication/register'
 import Profile from '../views/account/profile'
@@ -22,6 +21,14 @@ import Notification from '../views/dashboard/notification/NotificationView'
 import Curative from '../views/dashboard/maintenance/curative/CurativeView'
 import Preventive from '../views/dashboard/maintenance/preventive/PreventiveView'
 import Map from '../views/map/MapViews'
+
+// Composants Depot
+import DepotLayout from '../views/dashboard/depot/DepotLayout'
+import MouvementsPage from '../views/dashboard/depot/MouvementsPage'
+import CommandesPage from '../views/dashboard/depot/CommandesPage'
+import TransfertsPage from '../views/dashboard/depot/TransfertsPage'
+import StockPage from '../views/dashboard/depot/StockPage'
+
 const AppRoutes = ({ user, isLoggedIn }) => {
   return (
     <Routes>
@@ -98,6 +105,23 @@ const AppRoutes = ({ user, isLoggedIn }) => {
           </Layout>
         }
       />
+
+      {/* ✨ ROUTES DEPOT - Intégrées dans Layout */}
+      <Route
+        path="/depot/:depotId/*"
+        element={
+          <Layout user={user}>
+            <DepotLayout user={user} />
+          </Layout>
+        }
+      >
+        <Route path="stock" element={<StockPage />} />
+        <Route path="mouvements" element={<MouvementsPage />} />
+        <Route path="commandes" element={<CommandesPage />} />
+        <Route path="transferts" element={<TransfertsPage />} />
+        <Route index element={<Navigate to="stock" replace />} />
+      </Route>
+
       <Route
         path="/notifications"
         element={
@@ -106,6 +130,7 @@ const AppRoutes = ({ user, isLoggedIn }) => {
           </Layout>
         }
       />
+      
       <Route
         path="/materiel/:id"
         element={
@@ -114,6 +139,7 @@ const AppRoutes = ({ user, isLoggedIn }) => {
           </Layout>
         }
       />
+      
       <Route
         path="/maintenance/preventive"
         element={
@@ -122,6 +148,7 @@ const AppRoutes = ({ user, isLoggedIn }) => {
           </Layout>
         }
       />
+      
       <Route
         path="/maintenance/curative"
         element={

@@ -586,6 +586,112 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- ============================================
+-- TRIGGER 1: Notification sur Stock Faible
+-- ============================================
+DELIMITER $$
+
+CREATE TRIGGER notif_stock_faible
+AFTER UPDATE ON stock
+FOR EACH ROW
+BEGIN
+  DECLARE v_designation VARCHAR(100);
+  DECLARE v_depot_nom VARCHAR(100);
+  
+  -- Vérifier si le stock passe en dessous du minimum
+  IF NEW.quantite <= NEW.quantite_minimum AND OLD.quantite > OLD.quantite_minimum THEN
+    
+    -- Récupérer les infos du matériel et dépôt
+    SELECT m.designation INTO v_designation
+    FROM materiel m
+    WHERE m.id = NEW.materiel_id;
+    
+    SELECT d.nom INTO v_depot_nom
+    FROM depot d
+    WHERE d.id = NEW.depot_id;
+    
+    -- Insérer la notification
+    INSERT INTO notifications (
+      type,
+      materiel_id,
+      titre,
+      message,
+      priorite,
+      data
+    ) VALUES (
+      'document',
+      NEW.materiel_id,
+      'Stock Faible Détecté',
+      CONCAT('Le stock de "', v_designation, '" au ', v_depot_nom, 
+             ' est passé à ', NEW.quantite, ' unité(s). Seuil minimum: ', 
+             NEW.quantite_minimum, ' unité(s).'),
+      CASE 
+        WHEN NEW.quantite = 0 THEN 'Urgent'
+        WHEN NEW.quantite <= NEW.quantite_minimum * 0.5 THEN 'Attention'
+        ELSE 'Info'
+      END,
+      JSON_OBJECT(
+        'depot_id', NEW.depot_id,
+        'depot_nom', v_depot_nom,
+        'quantite_actuelle', NEW.quantite,
+        'quantite_minimum', NEW.quantite_minimum,
+        'action_requise', 'reapprovisionnement'
+      )
+    );
+  END IF;
+END$$
+
+DELIMITER ;
+
+-- ============================================
+-- TRIGGER 2: Notification sur Rupture de Stock
+-- ============================================
+DELIMITER $$
+
+CREATE TRIGGER notif_rupture_stock
+AFTER UPDATE ON stock
+FOR EACH ROW
+BEGIN
+  DECLARE v_designation VARCHAR(100);
+  DECLARE v_depot_nom VARCHAR(100);
+  
+  -- Vérifier si le stock atteint zéro
+  IF NEW.quantite = 0 AND OLD.quantite > 0 THEN
+    
+    SELECT m.designation INTO v_designation
+    FROM materiel m
+    WHERE m.id = NEW.materiel_id;
+    
+    SELECT d.nom INTO v_depot_nom
+    FROM depot d
+    WHERE d.id = NEW.depot_id;
+    
+    INSERT INTO notifications (
+      type,
+      materiel_id,
+      titre,
+      message,
+      priorite,
+      data
+    ) VALUES (
+      'document',
+      NEW.materiel_id,
+      '🔴 RUPTURE DE STOCK',
+      CONCAT('ALERTE CRITIQUE: Le stock de "', v_designation, 
+             '" au ', v_depot_nom, ' est épuisé. Réapprovisionnement urgent requis.'),
+      'Urgent',
+      JSON_OBJECT(
+        'depot_id', NEW.depot_id,
+        'depot_nom', v_depot_nom,
+        'action_requise', 'commande_urgente',
+        'derniere_sortie', NOW()
+      )
+    );
+  END IF;
+END$$
+
+DELIMITER ;
+
 -- ========================================
 -- 2. TRIGGERS POUR ATTACHEMENT
 -- ========================================

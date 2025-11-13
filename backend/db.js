@@ -5,7 +5,7 @@ const db = await mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '', // à adapter selon ton environnement
-  database: 'verification',
+  database: 'colass',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,

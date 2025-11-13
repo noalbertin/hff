@@ -17,7 +17,7 @@ import { useAuthStore, selectUser } from '../../../store/auth'
 import CamionEdit from './CamionEdit'
 import CamionCreate from './CamionCreate'
 import api from '../../../utils/axios'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const CamionViews = () => {
   const [camions, setCamions] = useState([])
