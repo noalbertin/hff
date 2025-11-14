@@ -58,6 +58,45 @@ export const getMaterielsWithoutMaintenance = async (req, res) => {
   }
 }
 
+
+//Récupérer les matériels qui n'ont PAS encore de stock dans aucun dépôt
+export const getMaterielsWithoutStock = async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT m.*
+      FROM materiel m
+      LEFT JOIN stock s ON m.id = s.materiel_id
+      WHERE s.materiel_id IS NULL
+      ORDER BY m.designation
+    `)
+    res.json(rows)
+  } catch (err) {
+    console.error('Erreur MySQL:', err.message)
+    res.status(500).json({ error: err.message })
+  }
+}
+
+//  Récupérer les matériels qui n'ont PAS de stock dans un dépôt spécifique
+export const getMaterielsWithoutStockInDepot = async (req, res) => {
+  const { depotId } = req.params
+  try {
+    const [rows] = await db.query(`
+      SELECT m.*
+      FROM materiel m
+      WHERE m.id NOT IN (
+        SELECT materiel_id 
+        FROM stock 
+        WHERE depot_id = ?
+      )
+      ORDER BY m.designation
+    `, [depotId])
+    res.json(rows)
+  } catch (err) {
+    console.error('Erreur MySQL:', err.message)
+    res.status(500).json({ error: err.message })
+  }
+}
+
 // Récupérer le dernier attachement d'un matériel
 export const getLastAttachement = async (req, res) => {
   const { id } = req.params

@@ -26,12 +26,22 @@ const Breadcrumb = ({
             type="submit"
             startIcon={<AddIcon />}
             sx={{
-              bgcolor: '#1C252E',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               textTransform: 'none',
               fontSize: '0.875rem',
               borderRadius: '8px',
               fontWeight: '700',
-              '&:hover': { bgcolor: '#454F5B' },
+              padding: '8px 16px',
+              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                boxShadow: '0 6px 16px rgba(102, 126, 234, 0.4)',
+                transform: 'translateY(-1px)',
+              },
+              '&:active': {
+                transform: 'translateY(0)',
+              },
+              transition: 'all 0.2s ease-in-out',
             }}
             onClick={onCreate}
           >

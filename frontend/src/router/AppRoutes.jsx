@@ -24,10 +24,10 @@ import Map from '../views/map/MapViews'
 
 // Composants Depot
 import DepotLayout from '../views/dashboard/depot/DepotLayout'
-import MouvementsPage from '../views/dashboard/depot/MouvementsPage'
-import CommandesPage from '../views/dashboard/depot/CommandesPage'
-import TransfertsPage from '../views/dashboard/depot/TransfertsPage'
-import StockPage from '../views/dashboard/depot/StockPage'
+import MouvementsPage from '../views/dashboard/depot/mouvement/MouvementsPage'
+import CommandesPage from '../views/dashboard/depot/commande/CommandesPage'
+import TransfertsPage from '../views/dashboard/depot/transfert/TransfertsPage'
+import StockPage from '../views/dashboard/depot/stock/StockPage'
 
 const AppRoutes = ({ user, isLoggedIn }) => {
   return (
@@ -130,7 +130,7 @@ const AppRoutes = ({ user, isLoggedIn }) => {
           </Layout>
         }
       />
-      
+
       <Route
         path="/materiel/:id"
         element={
@@ -139,7 +139,7 @@ const AppRoutes = ({ user, isLoggedIn }) => {
           </Layout>
         }
       />
-      
+
       <Route
         path="/maintenance/preventive"
         element={
@@ -148,7 +148,7 @@ const AppRoutes = ({ user, isLoggedIn }) => {
           </Layout>
         }
       />
-      
+
       <Route
         path="/maintenance/curative"
         element={

@@ -528,7 +528,6 @@ const NotificationView = () => {
               </Box>
 
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', flex: 1 }}>
-                
                 {/* Filtre Lu/Non Lu */}
                 <Box>
                   <Typography
@@ -592,11 +591,7 @@ const NotificationView = () => {
                     ].map((type) => (
                       <Chip
                         key={type}
-                        label={
-                          type === 'all'
-                            ? 'Tous'
-                            : getTypeLabel(type)
-                        }
+                        label={type === 'all' ? 'Tous' : getTypeLabel(type)}
                         onClick={() => setFilters({ ...filters, type: type })}
                         sx={{
                           bgcolor:

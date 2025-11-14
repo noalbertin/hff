@@ -215,19 +215,33 @@ CREATE TABLE `maintenance_curative` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
+
+CREATE TABLE materiel (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  designation VARCHAR(100) NOT NULL,
+  num_parc VARCHAR(10) NOT NULL,
+  parc_colas VARCHAR(20) NOT NULL,
+  serie VARCHAR(100) NOT NULL,
+  modele VARCHAR(100) NOT NULL,
+  cst VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Table des dépôts
 CREATE TABLE depot (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nom ENUM('Depot 1', 'Depot 2', 'Depot 3') NOT NULL,
   responsable VARCHAR(100),
+  adresse VARCHAR(255),
+  contact VARCHAR(20),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Données par défaut
 INSERT INTO depot (nom, responsable) VALUES
-('Depot 1', 'Sylvano'),
-('Depot 2', 'Rakoto'),
-('Depot 3', 'Rabe');
+('Depot 1', 'Sylvano', 'Betania tanambao', '0333333333'),
+('Depot 2', 'Rakoto', 'Betania Centre', '0343443434'),
+('Depot 3', 'Rabe', 'Sanfils', '0323233232');
 
 
 -- Table des stocks par dépôt
@@ -248,7 +262,7 @@ CREATE TABLE mouvement_stock (
   id INT AUTO_INCREMENT PRIMARY KEY,
   materiel_id INT NOT NULL,
   depot_id INT NOT NULL,
-  type_mouvement ENUM('ENTREE', 'SORTIE', 'TRANSFERT', 'COMMANDE', 'RETOUR') NOT NULL,
+  type_mouvement ENUM('ENTREE', 'SORTIE') NOT NULL,
   quantite INT NOT NULL,
   depot_destination_id INT DEFAULT NULL,
   reference_document VARCHAR(50),
@@ -261,30 +275,30 @@ CREATE TABLE mouvement_stock (
 );
 
 -- Table des commandes
-CREATE TABLE commande (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  numero_commande VARCHAR(50) NOT NULL UNIQUE,
-  depot_id INT NOT NULL,
-  statut ENUM('EN_ATTENTE', 'VALIDEE', 'LIVREE', 'ANNULEE') DEFAULT 'EN_ATTENTE',
-  date_commande DATE NOT NULL,
-  date_livraison_prevue DATE,
-  date_livraison_reelle DATE,
-  demandeur VARCHAR(100),
-  commentaire TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (depot_id) REFERENCES depot(id)
-);
+-- CREATE TABLE commande (
+--   id INT AUTO_INCREMENT PRIMARY KEY,
+--   numero_commande VARCHAR(50) NOT NULL UNIQUE,
+--   depot_id INT NOT NULL,
+--   statut ENUM('EN_ATTENTE', 'VALIDEE', 'LIVREE', 'ANNULEE') DEFAULT 'EN_ATTENTE',
+--   date_commande DATE NOT NULL,
+--   date_livraison_prevue DATE,
+--   date_livraison_reelle DATE,
+--   demandeur VARCHAR(100),
+--   commentaire TEXT,
+--   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--   FOREIGN KEY (depot_id) REFERENCES depot(id)
+-- );
 
 -- Table des lignes de commande
-CREATE TABLE ligne_commande (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  commande_id INT NOT NULL,
-  materiel_id INT NOT NULL,
-  quantite_commandee INT NOT NULL,
-  quantite_livree INT DEFAULT 0,
-  FOREIGN KEY (commande_id) REFERENCES commande(id) ON DELETE CASCADE,
-  FOREIGN KEY (materiel_id) REFERENCES materiel(id)
-);
+-- CREATE TABLE ligne_commande (
+--   id INT AUTO_INCREMENT PRIMARY KEY,
+--   commande_id INT NOT NULL,
+--   materiel_id INT NOT NULL,
+--   quantite_commandee INT NOT NULL,
+--   quantite_livree INT DEFAULT 0,
+--   FOREIGN KEY (commande_id) REFERENCES commande(id) ON DELETE CASCADE,
+--   FOREIGN KEY (materiel_id) REFERENCES materiel(id)
+-- );
 
 
 -- ========================================

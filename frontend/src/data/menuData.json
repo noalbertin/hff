@@ -66,7 +66,7 @@
       },
       {
         "text": "Dépôts",
-        "iconLib": "fa", 
+        "iconLib": "fa",
         "icon": "FaWarehouse",
         "available": true,
         "link": "/depot/1/stock",
@@ -78,14 +78,14 @@
             "available": true
           },
           {
-            "text": "Dépôt Secondaire", 
+            "text": "Dépôt Secondaire",
             "link": "/depot/2/stock",
             "badge": "87",
             "available": true
           },
           {
             "text": "Dépôt Tertiaire",
-            "link": "/depot/3/stock", 
+            "link": "/depot/3/stock",
             "badge": "64",
             "available": true
           }

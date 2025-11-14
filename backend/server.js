@@ -15,6 +15,9 @@ import maintenanceRoutes from './routes/maintenanceRoutes.js'
 import notificationsRoutes from './routes/notificationRoutes.js'
 import preventiveRoutes from './routes/preventiveRoutes.js'
 import curativeRoutes from './routes/curativeRoutes.js'
+import stockRoutes from './routes/stockRoutes.js'
+import depotRoutes from './routes/depotRoutes.js'
+import mouvementStockRoutes from './routes/mouvementStockRoutes.js'
 
 dotenv.config()
 
@@ -44,6 +47,10 @@ app.use('/api/maintenance', maintenanceRoutes)
 app.use('/api/notifications', notificationsRoutes)
 app.use('/api/preventive', preventiveRoutes)
 app.use('/api/curative', curativeRoutes)
+app.use('/api/stocks', stockRoutes)
+app.use('/api/depots', depotRoutes)
+app.use('/api/mouvements', mouvementStockRoutes)
+
 
 // Route de test
 app.get('/', (req, res) => {
@@ -62,6 +69,8 @@ app.get('/', (req, res) => {
       maintenance: '/api/maintenance',
       notifications: '/api/notifications',
       preventive: '/api/preventive',
+      stocks: '/api/stocks',
+      mouvements: '/api/mouvements'
     },
   })
 })
