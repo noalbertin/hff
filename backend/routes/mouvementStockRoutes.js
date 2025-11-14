@@ -7,6 +7,7 @@ import {
   getMouvementsByDepot,
   getMouvementsByType,
   getMouvementsRecents,
+  getMouvementsByDepot24h,
   createMouvement,
   updateMouvement,
   cancelMouvement,
@@ -23,6 +24,7 @@ router.get('/recents', getMouvementsRecents) // ?periode=24h|7d|30d
 router.get('/type/:type', getMouvementsByType) // /type/ENTREE ou /type/SORTIE
 router.get('/materiel/:materielId', getMouvementsByMateriel)
 router.get('/depot/:depotId', getMouvementsByDepot)
+router.get('/depot/:depotId/mouvements-24h', getMouvementsByDepot24h)
 router.get('/:id', getMouvementById)
 
 // Routes de modification

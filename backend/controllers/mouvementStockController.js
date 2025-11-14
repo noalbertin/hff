@@ -125,12 +125,16 @@ export const getMouvementsByType = async (req, res) => {
 
 // Récupérer les mouvements récents (dernières 24h, 7 jours, 30 jours)
 export const getMouvementsRecents = async (req, res) => {
-  const { periode } = req.query // '24h', '7d', '30d'
+  const { periode, limit } = req.query // '24h', '7d', '30d'
+  
+  // Validation de la période
+  const periodesValides = ['24h', '7d', '30d', 'all']
+  const periodeUtilisee = periodesValides.includes(periode) ? periode : 'all'
   
   let dateCondition = ''
-  switch(periode) {
+  switch(periodeUtilisee) {
     case '24h':
-      dateCondition = 'DATE(ms.created_at) = CURDATE()'
+      dateCondition = 'ms.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)'
       break
     case '7d':
       dateCondition = 'ms.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)'
@@ -139,28 +143,83 @@ export const getMouvementsRecents = async (req, res) => {
       dateCondition = 'ms.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)'
       break
     default:
-      dateCondition = '1=1'
+      dateCondition = '1=1' // Tous les mouvements
   }
+  
+  // Gestion de la limite
+  const limiteQuery = limit && !isNaN(limit) ? `LIMIT ${parseInt(limit)}` : ''
   
   try {
     const [rows] = await db.query(`
       SELECT 
         ms.*,
         m.designation,
+        m.modele,
         m.num_parc,
-        d.nom as depot_nom,
-        dd.nom as depot_destination_nom
+        m.parc_colas,
+        m.serie
       FROM mouvement_stock ms
       LEFT JOIN materiel m ON ms.materiel_id = m.id
       LEFT JOIN depot d ON ms.depot_id = d.id
-      LEFT JOIN depot dd ON ms.depot_destination_id = dd.id
       WHERE ${dateCondition}
       ORDER BY ms.created_at DESC
+      ${limiteQuery}
     `)
     
-    res.json(rows)
+    // Formater les dates pour le frontend
+    const mouvementsFormates = rows.map(mouvement => ({
+      ...mouvement,
+      created_at: new Date(mouvement.created_at).toISOString(),
+      date_formatee: new Date(mouvement.created_at).toLocaleDateString('fr-FR'),
+      heure_formatee: new Date(mouvement.created_at).toLocaleTimeString('fr-FR')
+    }))
+    
+    res.json({
+      success: true,
+      data: mouvementsFormates,
+      periode: periodeUtilisee,
+      total: rows.length
+    })
   } catch (err) {
-    res.status(500).json({ error: 'Erreur lors de la récupération des mouvements récents.' })
+    console.error('Erreur getMouvementsRecents:', err)
+    res.status(500).json({ 
+      success: false,
+      error: 'Erreur lors de la récupération des mouvements récents.' 
+    })
+  }
+}
+
+// Récupérer les mouvements récents par dépôt
+export const getMouvementsByDepot24h = async (req, res) => {
+  const { depotId } = req.params
+  
+  // Validation du depotId
+  if (!depotId || isNaN(depotId)) {
+    return res.status(400).json({ error: 'ID de dépôt invalide' })
+  }
+
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        ms.id,
+        ms.type_mouvement,
+        ms.quantite,
+        ms.created_at,
+        m.designation,
+        m.modele,
+        m.num_parc
+      FROM mouvement_stock ms
+      LEFT JOIN materiel m ON ms.materiel_id = m.id
+      WHERE (ms.depot_id = ? OR ms.depot_destination_id = ?)
+        AND ms.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+      ORDER BY ms.created_at DESC
+    `, [depotId, depotId])
+    
+    res.json(rows)
+    
+  } catch (err) {
+    console.error('Erreur getMouvementsByDepot24h:', err)
+    res.status(500).json({ error: 'Erreur lors de la récupération des mouvements du dépôt.' })
   }
 }
 

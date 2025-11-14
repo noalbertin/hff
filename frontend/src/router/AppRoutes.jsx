@@ -23,7 +23,7 @@ import Preventive from '../views/dashboard/maintenance/preventive/PreventiveView
 import Map from '../views/map/MapViews'
 
 // Composants Depot
-import DepotLayout from '../views/dashboard/depot/DepotLayout'
+import DepotLayout from '../views/dashboard/depot/depotLayout/DepotLayout'
 import MouvementsPage from '../views/dashboard/depot/mouvement/MouvementsPage'
 import CommandesPage from '../views/dashboard/depot/commande/CommandesPage'
 import TransfertsPage from '../views/dashboard/depot/transfert/TransfertsPage'

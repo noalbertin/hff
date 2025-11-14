@@ -84,7 +84,7 @@ const Modal = ({
           onClick={handleSave}
           disabled={!localFormValid}
           sx={{
-            bgcolor: '#1C252E',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             textTransform: 'none',
             fontSize: '0.875rem',
             borderRadius: '8px',

@@ -128,30 +128,6 @@ const MouvementEdit = ({ isOpen, mouvement, onChange, onSave, onClose }) => {
         </div>
       </div>
 
-      {/* Dépôts */}
-      <div className="row">
-        <div className="col-md-6 mb-3">
-          <TextField
-            fullWidth
-            label="Dépôt source"
-            value={depot_nom}
-            disabled
-            sx={textFieldStyle}
-          />
-        </div>
-        {depot_destination_nom && (
-          <div className="col-md-6 mb-3">
-            <TextField
-              fullWidth
-              label="Dépôt destination"
-              value={depot_destination_nom}
-              disabled
-              sx={textFieldStyle}
-            />
-          </div>
-        )}
-      </div>
-
       {/* Quantité */}
       <div className="row">
         <div className="col-md-6 mb-3">

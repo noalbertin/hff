@@ -104,6 +104,13 @@ export const getTousMaterielById = async (req, res) => {
         m.serie,
         m.cst,
         
+        -- Dépôt et Stock
+        d.id as depot_id,
+        d.nom as depot_nom,
+        d.responsable as depot_responsable,
+        d.contact as contact_responsable,
+        s.quantite,
+        
         -- Flotte
         f.annee,
         f.suivi,
@@ -147,6 +154,9 @@ export const getTousMaterielById = async (req, res) => {
         o.matricule_suppleant
 
       FROM materiel m
+      
+      LEFT JOIN stock s ON m.id = s.materiel_id
+      LEFT JOIN depot d ON s.depot_id = d.id
       
       LEFT JOIN flotte f ON m.id = f.materiel_id
       

@@ -2,61 +2,105 @@ import { Outlet, useParams } from 'react-router-dom'
 import {
   Typography,
   Box,
-  Chip,
-  Breadcrumbs,
   useTheme,
   useMediaQuery,
+  IconButton,
+  CircularProgress,
+  Alert,
 } from '@mui/material'
 import WarehouseIcon from '@mui/icons-material/Warehouse'
 import PersonIcon from '@mui/icons-material/Person'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import PhoneIcon from '@mui/icons-material/Phone'
-import DepotNav from './DepotNav'
+import EditIcon from '@mui/icons-material/Edit'
+import DepotNav from '../depotNav/DepotNav'
+import { useState, useEffect } from 'react'
+import api from '../../../../utils/axios'
+import DepotEdit from './DepotLayoutEdit'
 
 const DepotLayout = ({ user }) => {
   const { depotId } = useParams()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
-  // Données des dépôts
-  const depotsData = {
-    1: {
-      nom: 'Dépôt Principal',
-      responsable: 'Sylvano',
-      adresse: 'Zone Industrielle A',
-      telephone: '+261 34 12 345 67',
-      couleur: '#1d4ed8',
-      gradient: 'linear-gradient(135deg, #60a5fa 0%, #1d4ed8 100%)',
-    },
-    2: {
-      nom: 'Dépôt Secondaire',
-      responsable: 'Rakoto',
-      adresse: 'Route Nationale 1',
-      telephone: '+261 34 23 456 78',
-      couleur: '#0369a1',
-      gradient: 'linear-gradient(135deg, #38bdf8 0%, #0369a1 100%)',
-    },
-    3: {
-      nom: 'Dépôt Tertiaire',
-      responsable: 'Rabe',
-      adresse: 'Avenue du Commerce',
-      telephone: '+261 34 34 567 89',
-      couleur: '#0d9488',
-      gradient: 'linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%)',
-    },
+  // États
+  const [depot, setDepot] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [openModal, setOpenModal] = useState(false)
+
+  // Couleurs par dépôt (basées sur l'ID)
+  const getDepotColors = (id) => {
+    const colors = {
+      1: {
+        couleur: '#1d4ed8',
+        gradient: 'linear-gradient(135deg, #60a5fa 0%, #1d4ed8 100%)',
+      },
+      2: {
+        couleur: '#0369a1',
+        gradient: 'linear-gradient(135deg, #38bdf8 0%, #0369a1 100%)',
+      },
+      3: {
+        couleur: '#0d9488',
+        gradient: 'linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%)',
+      },
+    }
+    return colors[id] || colors[1]
   }
 
-  const depot = depotsData[depotId]
+  // Récupérer les données du dépôt
+  useEffect(() => {
+    const fetchDepot = async () => {
+      try {
+        setLoading(true)
+        const response = await api.get(`/depots/${depotId}`)
+        setDepot(response.data)
+        setError(null)
+      } catch (err) {
+        console.error('Erreur lors du chargement du dépôt:', err)
+        setError('Impossible de charger les informations du dépôt')
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  if (!depot) {
+    fetchDepot()
+  }, [depotId])
+
+  // Ouvrir le modal
+  const handleOpenModal = () => {
+    setOpenModal(true)
+  }
+
+  // Fermer le modal
+  const handleCloseModal = () => {
+    setOpenModal(false)
+  }
+
+  // Mettre à jour le dépôt après modification
+  const handleUpdateDepot = (updatedDepot) => {
+    setDepot(updatedDepot)
+  }
+
+  // Affichage pendant le chargement
+  if (loading) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h5" color="error">
-          Dépôt introuvable
-        </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 5 }}>
+        <CircularProgress />
       </Box>
     )
   }
+
+  // Affichage en cas d'erreur
+  if (error || !depot) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">{error || 'Dépôt introuvable'}</Alert>
+      </Box>
+    )
+  }
+
+  const colors = getDepotColors(depot.id)
 
   return (
     <>
@@ -69,7 +113,7 @@ const DepotLayout = ({ user }) => {
           gap: 3,
           mb: 3,
           p: 3,
-          background: depot.gradient,
+          background: colors.gradient,
           borderRadius: 3,
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -112,7 +156,7 @@ const DepotLayout = ({ user }) => {
 
         {/* Contenu de l'en-tête */}
         <Box sx={{ flexGrow: 1, position: 'relative', zIndex: 1 }}>
-          {/* Titre et badges */}
+          {/* Titre et bouton modifier */}
           <Box
             sx={{
               display: 'flex',
@@ -128,10 +172,27 @@ const DepotLayout = ({ user }) => {
               sx={{
                 textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
                 color: 'white',
+                flexGrow: 1,
               }}
             >
               {depot.nom}
             </Typography>
+
+            {/* Bouton modifier */}
+            <IconButton
+              onClick={handleOpenModal}
+              sx={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                '&:hover': {
+                  background: 'rgba(255, 255, 255, 0.3)',
+                },
+              }}
+            >
+              <EditIcon />
+            </IconButton>
           </Box>
 
           {/* Informations du dépôt */}
@@ -174,7 +235,7 @@ const DepotLayout = ({ user }) => {
                   fontWeight="600"
                   sx={{ fontSize: '13px' }}
                 >
-                  {depot.responsable}
+                  {depot.responsable || 'Non renseigné'}
                 </Typography>
               </Box>
             </Box>
@@ -208,7 +269,7 @@ const DepotLayout = ({ user }) => {
                   fontWeight="600"
                   sx={{ fontSize: '13px' }}
                 >
-                  {depot.adresse}
+                  {depot.adresse || 'Non renseignée'}
                 </Typography>
               </Box>
             </Box>
@@ -242,7 +303,7 @@ const DepotLayout = ({ user }) => {
                   fontWeight="600"
                   sx={{ fontSize: '13px' }}
                 >
-                  {depot.telephone}
+                  {depot.contact || 'Non renseigné'}
                 </Typography>
               </Box>
             </Box>
@@ -252,8 +313,17 @@ const DepotLayout = ({ user }) => {
 
       {/* Navigation entre les onglets */}
       <DepotNav depotId={depotId} />
+
       {/* Contenu */}
       <Outlet context={{ depotId, depot, user }} />
+
+      {/* Modal de modification séparé */}
+      <DepotEdit
+        isOpen={openModal}
+        depot={depot}
+        onSave={handleUpdateDepot}
+        onClose={handleCloseModal}
+      />
     </>
   )
 }

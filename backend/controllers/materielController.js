@@ -1,10 +1,21 @@
 // controllers/materielController.js
 import db from '../db.js'
 
-// Récupérer tous les camions
+// Récupérer tous les camions avec leur dépôt
 export const getMateriels = async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM materiel ORDER BY id DESC')
+    const [rows] = await db.query(`
+      SELECT 
+        m.*,
+        d.id as depot_id,
+        d.nom as depot_nom,
+        d.responsable as depot_responsable,
+        s.quantite
+      FROM materiel m
+      LEFT JOIN stock s ON m.id = s.materiel_id
+      LEFT JOIN depot d ON s.depot_id = d.id
+      ORDER BY m.id DESC
+    `)
     res.json(rows)
   } catch (err) {
     console.error('Erreur MySQL:', err.message)

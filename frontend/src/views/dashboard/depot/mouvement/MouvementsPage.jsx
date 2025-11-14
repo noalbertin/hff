@@ -183,6 +183,23 @@ const MouvementView = () => {
       label: 'Utilisateur',
       render: (row) => row.utilisateur || '-',
     },
+    
+    {
+      id: 'commentaire',
+      label: 'Commentaire',
+      render: (row) => (
+        <div
+          style={{
+            maxWidth: '250px',
+            whiteSpace: 'normal',
+            wordBreak: 'break-word',
+          }}
+        >
+          {row.commentaire || '-'}
+        </div>
+      ),
+    },
+
   ]
 
   // Créer un mouvement

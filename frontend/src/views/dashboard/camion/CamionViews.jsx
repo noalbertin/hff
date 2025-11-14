@@ -84,29 +84,57 @@ const CamionViews = () => {
     }
   }, [searchTerm, camions])
 
-  // Colonnes du tableau
-  const columns = [
-    // {/* id: 'id', label: 'Id' */},
-    {
-      id: 'designation',
-      label: 'Désignation',
-      render: (row) => row.designation || '-',
-    },
-    { id: 'num_parc', label: 'Parc HFF', render: (row) => row.num_parc || '-' },
-    {
-      id: 'parc_colas',
-      label: 'Parc Colas',
-      render: (row) => row.parc_colas || '-',
-    },
-    { id: 'modele', label: 'Modèle', render: (row) => row.modele || '-' },
-    { id: 'serie', label: 'N° Série', render: (row) => row.serie || '-' },
-    { id: 'cst', label: 'CST', render: (row) => row.cst || '-' },
-    {
-      id: 'immatriculation',
-      label: 'Immatriculation',
-      render: (row) => row.immatriculation || '-',
-    },
-  ]
+// Colonnes du tableau
+const columns = [
+  { 
+    id: 'depot_nom', 
+    label: 'Dépôt', 
+    render: (row) =>(
+     <span
+      className="badge"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '4px 12px',
+        fontSize: '14px',
+        fontWeight: '700',
+        textAlign: 'center',
+        minWidth: '80px',
+        borderRadius: '12px',
+        color: 'white',
+        backgroundColor: 
+          row.depot_nom === 'Depot 1' 
+            ? '#1d4ed8'
+            : row.depot_nom === 'Depot 2'
+            ? '#0369a1'
+            : '#0d9488'
+      }}
+    >
+      {row.depot_nom}
+    </span>
+    )
+  },
+  {
+    id: 'designation',
+    label: 'Désignation',
+    render: (row) => row.designation || '-',
+  },
+  { id: 'num_parc', label: 'Parc HFF', render: (row) => row.num_parc || '-' },
+  {
+    id: 'parc_colas',
+    label: 'Parc Colas',
+    render: (row) => row.parc_colas || '-',
+  },
+  { id: 'modele', label: 'Modèle', render: (row) => row.modele || '-' },
+  { id: 'serie', label: 'N° Série', render: (row) => row.serie || '-' },
+  { id: 'cst', label: 'CST', render: (row) => row.cst || '-' },
+  {
+    id: 'immatriculation',
+    label: 'Immatriculation',
+    render: (row) => row.immatriculation || '-',
+  },
+]
 
   // Ouvre le modal de création de camion
   const handleCreate = () => {

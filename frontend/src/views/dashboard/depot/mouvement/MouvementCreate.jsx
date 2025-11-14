@@ -91,29 +91,48 @@ const MouvementCreate = ({ isOpen, onSave, onClose, depotId }) => {
     }
   }, [depotId])
 
-  // Charger le stock disponible quand matériel et dépôt sont sélectionnés
-  useEffect(() => {
-    const fetchStock = async () => {
-      if (mouvement.materiel_id && mouvement.depot_id) {
-        try {
-          const { data } = await api.get(`stocks/depot/${mouvement.depot_id}`)
-          const stock = data.find(
-            (s) => s.materiel_id === parseInt(mouvement.materiel_id)
-          )
-          setStockDisponible(stock?.quantite || 0)
-        } catch (error) {
-          console.error('Erreur lors du chargement du stock:', error)
-          setStockDisponible(0)
-        }
-      } else {
-        setStockDisponible(null)
-      }
+  // Charger les matériels en fonction du dépôt sélectionné ET du type de mouvement
+useEffect(() => {
+  const fetchMaterielsFromDepot = async () => {
+    if (!mouvement.depot_id) {
+      setMateriels([])
+      return
     }
 
-    if (mouvement.type_mouvement === 'SORTIE') {
-      fetchStock()
+    try {
+      // Récupérer le stock du dépôt sélectionné
+      const { data: stockData } = await api.get(
+        `stocks/depot/${mouvement.depot_id}`
+      )
+
+      if (mouvement.type_mouvement === 'ENTREE') {
+        // ✅ ENTRÉE : Afficher TOUS les matériels du dépôt (même quantité = 0)
+        const { data: allMateriels } = await api.get('stocks/depot/${mouvement.depot_id}')
+        const materielsDisponibles = allMateriels.filter((mat) =>
+          stockData.some((stock) => stock.materiel_id === mat.id)
+        )
+        setMateriels(materielsDisponibles)
+      } else {
+        // ✅ SORTIE : Afficher uniquement les matériels avec quantité > 0
+        const materielsAvecStock = stockData.filter(
+          (stock) => stock.quantite > 0
+        )
+        const { data: allMateriels } = await api.get('stocks/depot/${mouvement.depot_id}')
+        const materielsDisponibles = allMateriels.filter((mat) =>
+          materielsAvecStock.some((stock) => stock.materiel_id === mat.id)
+        )
+        setMateriels(materielsDisponibles)
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des matériels:', error)
+      setMateriels([])
     }
-  }, [mouvement.materiel_id, mouvement.depot_id, mouvement.type_mouvement])
+  }
+
+  if (isOpen && mouvement.depot_id) {
+    fetchMaterielsFromDepot()
+  }
+}, [isOpen, mouvement.depot_id, mouvement.type_mouvement])
 
   // Vérifier la validité du formulaire
   useEffect(() => {
