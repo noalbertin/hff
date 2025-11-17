@@ -47,7 +47,14 @@ const MouvementCreate = ({ isOpen, onSave, onClose, depotId }) => {
     }
   }, [isOpen])
 
-  // Charger les matériels en fonction du dépôt sélectionné
+  // Mettre à jour depot_id si depotId change
+  useEffect(() => {
+    if (depotId) {
+      setMouvement((prev) => ({ ...prev, depot_id: depotId }))
+    }
+  }, [depotId])
+
+  // ✅ CORRECTION : Charger les matériels en fonction du dépôt ET du type de mouvement
   useEffect(() => {
     const fetchMaterielsFromDepot = async () => {
       if (!mouvement.depot_id) {
@@ -56,21 +63,30 @@ const MouvementCreate = ({ isOpen, onSave, onClose, depotId }) => {
       }
 
       try {
-        // Récupérer le stock du dépôt sélectionné
+        // 1. Récupérer TOUS les matériels
+        const { data: allMateriels } = await api.get('materiel')
+
+        // 2. Récupérer le stock du dépôt sélectionné
         const { data: stockData } = await api.get(
           `stocks/depot/${mouvement.depot_id}`
         )
 
-        // Pour les sorties, ne récupérer que les matériels en stock dans ce dépôt
-        const materielsAvecStock = stockData.filter(
-          (stock) => stock.quantite > 0
-        )
+        let materielsDisponibles = []
 
-        // Récupérer les détails complets des matériels
-        const { data: allMateriels } = await api.get('materiel')
-        const materielsDisponibles = allMateriels.filter((mat) =>
-          materielsAvecStock.some((stock) => stock.materiel_id === mat.id)
-        )
+        if (mouvement.type_mouvement === 'ENTREE') {
+          // ✅ ENTRÉE : Afficher TOUS les matériels qui ont un enregistrement de stock dans ce dépôt (même quantité = 0)
+          materielsDisponibles = allMateriels.filter((mat) =>
+            stockData.some((stock) => stock.materiel_id === mat.id)
+          )
+        } else {
+          // ✅ SORTIE : Afficher uniquement les matériels avec quantité > 0
+          const materielsAvecStock = stockData.filter(
+            (stock) => stock.quantite > 0
+          )
+          materielsDisponibles = allMateriels.filter((mat) =>
+            materielsAvecStock.some((stock) => stock.materiel_id === mat.id)
+          )
+        }
 
         setMateriels(materielsDisponibles)
       } catch (error) {
@@ -84,55 +100,32 @@ const MouvementCreate = ({ isOpen, onSave, onClose, depotId }) => {
     }
   }, [isOpen, mouvement.depot_id, mouvement.type_mouvement])
 
-  // Mettre à jour depot_id si depotId change
+  // ✅ AJOUT : Charger le stock disponible quand un matériel est sélectionné
   useEffect(() => {
-    if (depotId) {
-      setMouvement((prev) => ({ ...prev, depot_id: depotId }))
-    }
-  }, [depotId])
-
-  // Charger les matériels en fonction du dépôt sélectionné ET du type de mouvement
-useEffect(() => {
-  const fetchMaterielsFromDepot = async () => {
-    if (!mouvement.depot_id) {
-      setMateriels([])
-      return
-    }
-
-    try {
-      // Récupérer le stock du dépôt sélectionné
-      const { data: stockData } = await api.get(
-        `stocks/depot/${mouvement.depot_id}`
-      )
-
-      if (mouvement.type_mouvement === 'ENTREE') {
-        // ✅ ENTRÉE : Afficher TOUS les matériels du dépôt (même quantité = 0)
-        const { data: allMateriels } = await api.get('stocks/depot/${mouvement.depot_id}')
-        const materielsDisponibles = allMateriels.filter((mat) =>
-          stockData.some((stock) => stock.materiel_id === mat.id)
-        )
-        setMateriels(materielsDisponibles)
-      } else {
-        // ✅ SORTIE : Afficher uniquement les matériels avec quantité > 0
-        const materielsAvecStock = stockData.filter(
-          (stock) => stock.quantite > 0
-        )
-        const { data: allMateriels } = await api.get('stocks/depot/${mouvement.depot_id}')
-        const materielsDisponibles = allMateriels.filter((mat) =>
-          materielsAvecStock.some((stock) => stock.materiel_id === mat.id)
-        )
-        setMateriels(materielsDisponibles)
+    const fetchStockDisponible = async () => {
+      if (!mouvement.materiel_id || !mouvement.depot_id) {
+        setStockDisponible(null)
+        return
       }
-    } catch (error) {
-      console.error('Erreur lors du chargement des matériels:', error)
-      setMateriels([])
-    }
-  }
 
-  if (isOpen && mouvement.depot_id) {
-    fetchMaterielsFromDepot()
-  }
-}, [isOpen, mouvement.depot_id, mouvement.type_mouvement])
+      try {
+        const { data: stockData } = await api.get(
+          `stocks/depot/${mouvement.depot_id}`
+        )
+        const stock = stockData.find(
+          (s) => s.materiel_id === parseInt(mouvement.materiel_id, 10)
+        )
+        setStockDisponible(stock ? stock.quantite : 0)
+      } catch (error) {
+        console.error('Erreur lors du chargement du stock:', error)
+        setStockDisponible(null)
+      }
+    }
+
+    if (mouvement.type_mouvement === 'SORTIE') {
+      fetchStockDisponible()
+    }
+  }, [mouvement.materiel_id, mouvement.depot_id, mouvement.type_mouvement])
 
   // Vérifier la validité du formulaire
   useEffect(() => {
@@ -306,125 +299,95 @@ useEffect(() => {
         <div className="row">
           <div className="col mb-3">
             <Alert severity="info">
-              Seuls les matériels en stock dans ce dépôt sont disponibles pour
-              une entrée et sortie.
+              {mouvement.type_mouvement === 'ENTREE'
+                ? 'Tous les matériels enregistrés dans ce dépôt sont disponibles.'
+                : 'Seuls les matériels avec un stock disponible (quantité > 0) sont affichés.'}
             </Alert>
           </div>
         </div>
       )}
 
       {/* Afficher le stock disponible pour les sorties */}
-      {mouvement.type_mouvement === 'SORTIE' && stockDisponible !== null && (
-        <div className="row">
-          <div className="col mb-3">
-            <Alert severity={stockDisponible > 0 ? 'info' : 'warning'}>
-              Stock disponible: <strong>{stockDisponible}</strong> unités
-            </Alert>
-          </div>
-        </div>
-      )}
-
-      {/* (seulement pour les entrées) */}
-      {mouvement.type_mouvement === 'ENTREE' && (
-        <div className="row">
-          <div className="col mb-3">
-            <AutocompleteField
-              required
-              label="Matériel"
-              name="materiel_id"
-              value={mouvement.materiel_id}
-              onChange={handleChange}
-              options={materielOptions}
-              disabled={!mouvement.depot_id}
-            />
-            {!mouvement.depot_id && (
-              <small
-                style={{ color: '#637381', marginTop: 4, display: 'block' }}
-              >
-                Veuillez d'abord sélectionner un dépôt
-              </small>
-            )}
-          </div>
-          <div className="col-md-6 mb-3">
-            <TextField
-              required
-              fullWidth
-              type="number"
-              label="Quantité"
-              name="quantite"
-              value={mouvement.quantite}
-              onChange={handleChange}
-              sx={textFieldStyle}
-              inputProps={{ min: 1 }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* (seulement pour les sorties) */}
-      {mouvement.type_mouvement === 'SORTIE' && (
-        <>
+      {mouvement.type_mouvement === 'SORTIE' &&
+        mouvement.materiel_id &&
+        stockDisponible !== null && (
           <div className="row">
             <div className="col mb-3">
-              <AutocompleteField
-                required
-                label="Matériel"
-                name="materiel_id"
-                value={mouvement.materiel_id}
-                onChange={handleChange}
-                options={materielOptions}
-                disabled={!mouvement.depot_id}
-              />
-              {!mouvement.depot_id && (
-                <small
-                  style={{ color: '#637381', marginTop: 4, display: 'block' }}
-                >
-                  Veuillez d'abord sélectionner un dépôt
-                </small>
-              )}
-            </div>
-            <div className="col-md-6 mb-3">
-              <TextField
-                required
-                fullWidth
-                type="number"
-                label="Quantité"
-                name="quantite"
-                value={mouvement.quantite}
-                onChange={handleChange}
-                sx={textFieldStyle}
-                inputProps={{ min: 1 }}
-              />
+              <Alert severity={stockDisponible > 0 ? 'info' : 'warning'}>
+                Stock disponible: <strong>{stockDisponible}</strong> unité(s)
+              </Alert>
             </div>
           </div>
+        )}
 
-          {/* Utilisateur et commentaire */}
-          <div className="row">
-            <div className="col mb-3">
-              <TextField
-                fullWidth
-                label="Utilisateur"
-                name="utilisateur"
-                value={mouvement.utilisateur}
-                onChange={handleChange}
-                sx={textFieldStyle}
-              />
-            </div>
-            <div className="col mb-3">
+      {/* Matériel et Quantité */}
+      <div className="row">
+        <div className="col mb-3">
+          <AutocompleteField
+            required
+            label="Matériel"
+            name="materiel_id"
+            value={mouvement.materiel_id}
+            onChange={handleChange}
+            options={materielOptions}
+            disabled={!mouvement.depot_id}
+          />
+          {!mouvement.depot_id && (
+            <small style={{ color: '#637381', marginTop: 4, display: 'block' }}>
+              Veuillez d'abord sélectionner un dépôt
+            </small>
+          )}
+        </div>
+        <div className="col-md-6 mb-3">
           <TextField
+            required
             fullWidth
-            label="Référence document"
-            name="reference_document"
-            value={mouvement.reference_document}
+            type="number"
+            label="Quantité"
+            name="quantite"
+            value={mouvement.quantite}
             onChange={handleChange}
             sx={textFieldStyle}
-            placeholder="BL-2024-001"
+            inputProps={{
+              min: 1,
+              max:
+                mouvement.type_mouvement === 'SORTIE' &&
+                stockDisponible !== null
+                  ? stockDisponible
+                  : undefined,
+            }}
           />
         </div>
+      </div>
+
+      {/* Utilisateur et Référence document (pour les sorties) */}
+      {mouvement.type_mouvement === 'SORTIE' && (
+        <div className="row">
+          <div className="col mb-3">
+            <TextField
+              fullWidth
+              label="Utilisateur"
+              name="utilisateur"
+              value={mouvement.utilisateur}
+              onChange={handleChange}
+              sx={textFieldStyle}
+            />
           </div>
-        </>
+          <div className="col mb-3">
+            <TextField
+              fullWidth
+              label="Référence document"
+              name="reference_document"
+              value={mouvement.reference_document}
+              onChange={handleChange}
+              sx={textFieldStyle}
+              placeholder="BL-2024-001"
+            />
+          </div>
+        </div>
       )}
 
+      {/* Commentaire */}
       <div className="row">
         <div className="col mb-3">
           <TextField

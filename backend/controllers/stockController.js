@@ -31,7 +31,8 @@ export const getStocks = async (req, res) => {
 export const getStockById = async (req, res) => {
   const { id } = req.params
   try {
-    const [rows] = await db.query(`
+    const [rows] = await db.query(
+      `
       SELECT 
         s.*,
         m.designation,
@@ -41,8 +42,10 @@ export const getStockById = async (req, res) => {
       LEFT JOIN materiel m ON s.materiel_id = m.id
       LEFT JOIN depot d ON s.depot_id = d.id
       WHERE s.id = ?
-    `, [id])
-    
+    `,
+      [id]
+    )
+
     if (rows.length === 0)
       return res.status(404).json({ message: 'Stock non trouvé.' })
     res.json(rows[0])
@@ -55,7 +58,8 @@ export const getStockById = async (req, res) => {
 export const getStockByMateriel = async (req, res) => {
   const { materielId } = req.params
   try {
-    const [rows] = await db.query(`
+    const [rows] = await db.query(
+      `
       SELECT 
         s.*,
         d.nom as depot_nom,
@@ -64,8 +68,10 @@ export const getStockByMateriel = async (req, res) => {
       LEFT JOIN depot d ON s.depot_id = d.id
       WHERE s.materiel_id = ?
       ORDER BY d.nom
-    `, [materielId])
-    
+    `,
+      [materielId]
+    )
+
     res.json(rows)
   } catch (err) {
     res.status(500).json({ error: 'Erreur lors de la récupération du stock.' })
@@ -76,7 +82,8 @@ export const getStockByMateriel = async (req, res) => {
 export const getStockByDepot = async (req, res) => {
   const { depotId } = req.params
   try {
-    const [rows] = await db.query(`
+    const [rows] = await db.query(
+      `
       SELECT 
         s.*,
         m.designation,
@@ -88,8 +95,10 @@ export const getStockByDepot = async (req, res) => {
       LEFT JOIN materiel m ON s.materiel_id = m.id
       WHERE s.depot_id = ?
       ORDER BY m.designation
-    `, [depotId])
-    
+    `,
+      [depotId]
+    )
+
     res.json(rows)
   } catch (err) {
     res.status(500).json({ error: 'Erreur lors de la récupération du stock.' })
@@ -122,16 +131,20 @@ export const getStocksEnRupture = async (req, res) => {
 // Créer un stock
 export const createStock = async (req, res) => {
   const { materiel_id, depot_id, quantite, quantite_minimum } = req.body
-  
+
   try {
     // Vérifier si le matériel existe
-    const [materiel] = await db.query('SELECT id FROM materiel WHERE id = ?', [materiel_id])
+    const [materiel] = await db.query('SELECT id FROM materiel WHERE id = ?', [
+      materiel_id,
+    ])
     if (materiel.length === 0) {
       return res.status(404).json({ error: 'Matériel non trouvé.' })
     }
 
     // Vérifier si le dépôt existe
-    const [depot] = await db.query('SELECT id FROM depot WHERE id = ?', [depot_id])
+    const [depot] = await db.query('SELECT id FROM depot WHERE id = ?', [
+      depot_id,
+    ])
     if (depot.length === 0) {
       return res.status(404).json({ error: 'Dépôt non trouvé.' })
     }
@@ -142,14 +155,16 @@ export const createStock = async (req, res) => {
       [materiel_id, depot_id]
     )
     if (existing.length > 0) {
-      return res.status(400).json({ error: 'Ce stock existe déjà pour ce matériel et ce dépôt.' })
+      return res
+        .status(400)
+        .json({ error: 'Ce stock existe déjà pour ce matériel et ce dépôt.' })
     }
 
     const [result] = await db.query(
       'INSERT INTO stock (materiel_id, depot_id, quantite, quantite_minimum) VALUES (?, ?, ?, ?)',
       [materiel_id, depot_id, quantite || 0, quantite_minimum || 0]
     )
-    
+
     res.status(201).json({
       id: result.insertId,
       materiel_id,
@@ -167,7 +182,7 @@ export const createStock = async (req, res) => {
 export const updateStock = async (req, res) => {
   const { id } = req.params
   const { materiel_id, depot_id, quantite, quantite_minimum } = req.body
-  
+
   try {
     // Vérifier si le stock existe
     const [existing] = await db.query('SELECT id FROM stock WHERE id = ?', [id])
@@ -181,17 +196,19 @@ export const updateStock = async (req, res) => {
       [materiel_id, depot_id, id]
     )
     if (duplicate.length > 0) {
-      return res.status(400).json({ error: 'Ce stock existe déjà pour ce matériel et ce dépôt.' })
+      return res
+        .status(400)
+        .json({ error: 'Ce stock existe déjà pour ce matériel et ce dépôt.' })
     }
 
     const [result] = await db.query(
       'UPDATE stock SET materiel_id=?, depot_id=?, quantite=?, quantite_minimum=? WHERE id=?',
       [materiel_id, depot_id, quantite, quantite_minimum, id]
     )
-    
+
     if (result.affectedRows === 0)
       return res.status(404).json({ message: 'Stock non trouvé.' })
-      
+
     res.json({
       id,
       materiel_id,
@@ -209,10 +226,13 @@ export const updateStock = async (req, res) => {
 export const adjustStock = async (req, res) => {
   const { id } = req.params
   const { quantite_ajustement } = req.body // Positif pour ajouter, négatif pour retirer
-  
+
   try {
     // Récupérer la quantité actuelle
-    const [current] = await db.query('SELECT quantite FROM stock WHERE id = ?', [id])
+    const [current] = await db.query(
+      'SELECT quantite FROM stock WHERE id = ?',
+      [id]
+    )
     if (current.length === 0) {
       return res.status(404).json({ message: 'Stock non trouvé.' })
     }
@@ -220,14 +240,16 @@ export const adjustStock = async (req, res) => {
     const nouvelle_quantite = current[0].quantite + quantite_ajustement
 
     if (nouvelle_quantite < 0) {
-      return res.status(400).json({ error: 'La quantité ne peut pas être négative.' })
+      return res
+        .status(400)
+        .json({ error: 'La quantité ne peut pas être négative.' })
     }
 
     const [result] = await db.query(
       'UPDATE stock SET quantite = ? WHERE id = ?',
       [nouvelle_quantite, id]
     )
-    
+
     res.json({
       id,
       ancienne_quantite: current[0].quantite,
@@ -235,8 +257,8 @@ export const adjustStock = async (req, res) => {
       nouvelle_quantite,
     })
   } catch (err) {
-    console.error('Erreur lors de l\'ajustement du stock:', err.message)
-    res.status(500).json({ error: 'Erreur lors de l\'ajustement du stock.' })
+    console.error("Erreur lors de l'ajustement du stock:", err.message)
+    res.status(500).json({ error: "Erreur lors de l'ajustement du stock." })
   }
 }
 

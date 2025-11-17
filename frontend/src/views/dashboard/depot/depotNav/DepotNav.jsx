@@ -1,5 +1,13 @@
 import { NavLink, useParams } from 'react-router-dom'
-import { Box, Tab, Tabs, useMediaQuery, useTheme, Chip, Skeleton } from '@mui/material'
+import {
+  Box,
+  Tab,
+  Tabs,
+  useMediaQuery,
+  useTheme,
+  Chip,
+  Skeleton,
+} from '@mui/material'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { useDepotStats } from '../../../../hooks/useDepotStats'
@@ -9,7 +17,7 @@ const DepotNav = ({ depotId }) => {
   const currentTab = currentPath ? currentPath.split('/')[0] : 'stock'
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
-  
+
   // Utiliser le hook pour récupérer les stats
   const { quantiteTotal, mouvementsCount, loading } = useDepotStats(depotId)
 
@@ -21,7 +29,7 @@ const DepotNav = ({ depotId }) => {
       icon: <InventoryIcon />,
       path: `/depot/${depotId}/stock`,
       badge: loading ? null : quantiteTotal,
-      showBadge: true // Toujours afficher le badge pour le stock
+      showBadge: true, // Toujours afficher le badge pour le stock
     },
     {
       label: 'Mouvements (24h)',
@@ -29,7 +37,7 @@ const DepotNav = ({ depotId }) => {
       icon: <SwapHorizIcon />,
       path: `/depot/${depotId}/mouvements`,
       badge: loading ? null : mouvementsCount,
-      showBadge: mouvementsCount > 0 // Afficher seulement s'il y a des mouvements
+      showBadge: mouvementsCount > 0, // Afficher seulement s'il y a des mouvements
     },
   ]
 
@@ -90,14 +98,14 @@ const DepotNav = ({ depotId }) => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 {tab.icon}
                 {loading ? (
-                  <Skeleton 
-                    variant="rectangular" 
-                    width={24} 
-                    height={20} 
-                    sx={{ 
+                  <Skeleton
+                    variant="rectangular"
+                    width={24}
+                    height={20}
+                    sx={{
                       borderRadius: 1,
-                      backgroundColor: 'rgba(255, 255, 255, 0.3)'
-                    }} 
+                      backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                    }}
                   />
                 ) : (
                   tab.showBadge && (

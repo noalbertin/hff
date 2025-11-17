@@ -1,4 +1,4 @@
-// Sidebar.jsx - Version améliorée
+// Sidebar.jsx - Version avec dépôts dynamiques et rafraîchissement automatique
 import React, { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import menuData from '../data/menuData.json'
@@ -17,6 +17,11 @@ const iconLibraries = {
   bi: BiIcons,
 }
 
+// Event personnalisé pour forcer le rafraîchissement du sidebar
+export const refreshSidebarDepots = () => {
+  window.dispatchEvent(new CustomEvent('refreshDepots'))
+}
+
 const Sidebar = () => {
   const [notificationCount, setNotificationCount] = useState(0)
   const [notificationPriorities, setNotificationPriorities] = useState({
@@ -24,17 +29,70 @@ const Sidebar = () => {
     attention: 0,
     info: 0,
   })
+  const [dynamicMenu, setDynamicMenu] = useState(menuData)
 
   useEffect(() => {
     fetchNotificationCount()
+    fetchDepots()
 
-    // Rafraîchir le compteur toutes les 2 minutes
+    // Écouter l'événement de rafraîchissement personnalisé
+    const handleRefreshDepots = () => {
+      console.log('🔄 Rafraîchissement des dépôts...')
+      fetchDepots()
+    }
+
+    window.addEventListener('refreshDepots', handleRefreshDepots)
+
+    // Rafraîchir périodiquement (toutes les 30 secondes)
     const interval = setInterval(() => {
       fetchNotificationCount()
-    }, 120000)
+      fetchDepots()
+    }, 30000)
 
-    return () => clearInterval(interval)
+    return () => {
+      window.removeEventListener('refreshDepots', handleRefreshDepots)
+      clearInterval(interval)
+    }
   }, [])
+
+  // Charger les dépôts depuis l'API
+  const fetchDepots = async () => {
+    try {
+      const { data } = await api.get('/depots')
+      console.log('✅ Dépôts chargés:', data)
+      updateMenuWithDepots(data)
+    } catch (error) {
+      console.error('❌ Erreur chargement dépôts:', error)
+    }
+  }
+
+  // Mettre à jour le menu avec les dépôts récupérés
+  const updateMenuWithDepots = (depotsData) => {
+    const updatedMenu = menuData.map((section) => ({
+      ...section,
+      items: section.items.map((item) => {
+        // Trouver l'item "Dépôts"
+        if (item.text === 'Dépôts') {
+          return {
+            ...item,
+            // Mettre à jour le link principal avec le premier dépôt s'il existe
+            link:
+              depotsData.length > 0
+                ? `/depot/${depotsData[0].id}/stock`
+                : '/depots',
+            submenu: depotsData.map((depot) => ({
+              text: depot.nom,
+              link: `/depot/${depot.id}/stock`,
+              available: true,
+              depotData: depot,
+            })),
+          }
+        }
+        return item
+      }),
+    }))
+    setDynamicMenu(updatedMenu)
+  }
 
   const fetchNotificationCount = async () => {
     try {
@@ -76,7 +134,7 @@ const Sidebar = () => {
       <div className="menu-inner-shadow"></div>
 
       <ul className="menu-inner py-1">
-        {menuData.map((section) => (
+        {dynamicMenu.map((section) => (
           <React.Fragment key={section.header}>
             {section.header && (
               <li className="menu-header small text-uppercase">
@@ -208,7 +266,15 @@ const MenuItem = (item) => {
       {item.submenu && (
         <ul className="menu-sub">
           {item.submenu.map((subitem) => (
-            <MenuItem key={subitem.text} {...subitem} />
+            <MenuItem
+              key={subitem.link}
+              {...subitem}
+              title={
+                subitem.depotData
+                  ? `${subitem.depotData.responsable} - ${subitem.depotData.contact}`
+                  : undefined
+              }
+            />
           ))}
         </ul>
       )}
@@ -230,7 +296,6 @@ styleElement.textContent = `
     }
   }
 
-  /* Animation d'apparition */
   @keyframes badge-appear {
     0% {
       transform: translateY(-50%) scale(0);
@@ -245,25 +310,21 @@ styleElement.textContent = `
     }
   }
 
-  /* Classe pour l'animation */
   .notification-badge-animated {
     animation: notification-pulse 2s ease-in-out infinite, badge-appear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
-  /* Hover effect */
   .menu-item:hover .notification-badge-animated {
     transform: translateY(-50%) scale(1.05);
     transition: transform 0.2s ease;
     animation-play-state: paused;
   }
 
-  /* Style quand le menu est actif */
   .menu-item.active .notification-badge-animated {
     animation: none;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 
-  /* Ajustement pour menu réduit */
   .menu-vertical.menu-collapsed .notification-badge-animated {
     right: 8px;
     min-width: 20px;
@@ -272,7 +333,6 @@ styleElement.textContent = `
     padding: 0 5px;
   }
 
-  /* Style responsive */
   @media (max-width: 768px) {
     .notification-badge-animated {
       right: 10px;
@@ -283,7 +343,6 @@ styleElement.textContent = `
   }
 `
 
-// Ajouter le style seulement une fois
 if (!document.getElementById('notification-badge-styles')) {
   styleElement.id = 'notification-badge-styles'
   document.head.appendChild(styleElement)

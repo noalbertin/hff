@@ -51,7 +51,6 @@ app.use('/api/stocks', stockRoutes)
 app.use('/api/depots', depotRoutes)
 app.use('/api/mouvements', mouvementStockRoutes)
 
-
 // Route de test
 app.get('/', (req, res) => {
   res.json({
@@ -70,7 +69,7 @@ app.get('/', (req, res) => {
       notifications: '/api/notifications',
       preventive: '/api/preventive',
       stocks: '/api/stocks',
-      mouvements: '/api/mouvements'
+      mouvements: '/api/mouvements',
     },
   })
 })

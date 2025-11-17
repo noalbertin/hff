@@ -70,26 +70,7 @@
         "icon": "FaWarehouse",
         "available": true,
         "link": "/depot/1/stock",
-        "submenu": [
-          {
-            "text": "Dépôt Principal",
-            "link": "/depot/1/stock",
-            "badge": "152",
-            "available": true
-          },
-          {
-            "text": "Dépôt Secondaire",
-            "link": "/depot/2/stock",
-            "badge": "87",
-            "available": true
-          },
-          {
-            "text": "Dépôt Tertiaire",
-            "link": "/depot/3/stock",
-            "badge": "64",
-            "available": true
-          }
-        ]
+        "submenu": []
       },
       {
         "text": "Notifications",

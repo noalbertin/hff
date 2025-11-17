@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { TextField, Alert } from '@mui/material'
 import Modal from '../../../../components/ui/Modal'
 import api from '../../../../utils/axios'
+import { refreshSidebarDepots } from '../../../../layouts/Sidebar'
 
 const DepotLayoutEdit = ({ isOpen, depot, onSave, onClose }) => {
   // Fallback si `depot` est null/undefined
@@ -61,9 +62,9 @@ const DepotLayoutEdit = ({ isOpen, depot, onSave, onClose }) => {
 
   // Gérer les changements dans les champs
   const handleChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }))
   }
 
@@ -76,15 +77,23 @@ const DepotLayoutEdit = ({ isOpen, depot, onSave, onClose }) => {
     try {
       const response = await api.put(`/depots/${validDepot.id}`, formData)
       setSuccess(true)
-      
+
+      console.log('✅ Dépôt modifié avec succès')
+
+      // ⭐ RAFRAÎCHIR LE SIDEBAR IMMÉDIATEMENT
+      refreshSidebarDepots()
+
       // Appeler le callback onSave avec les données mises à jour
       if (onSave) {
         onSave(response.data)
       }
-      onClose()
 
+      // Fermer le modal après un court délai pour voir le message de succès
+      setTimeout(() => {
+        onClose()
+      }, 300)
     } catch (err) {
-      console.error('Erreur lors de la modification:', err)
+      console.error('❌ Erreur lors de la modification:', err)
       setError(
         err.response?.data?.error || 'Erreur lors de la modification du dépôt'
       )
@@ -94,12 +103,7 @@ const DepotLayoutEdit = ({ isOpen, depot, onSave, onClose }) => {
   }
 
   // Destructuration pour faciliter l'accès aux champs
-  const {
-    nom = '',
-    responsable = '',
-    adresse = '',
-    contact = '',
-  } = formData
+  const { nom = '', responsable = '', adresse = '', contact = '' } = formData
 
   return (
     <Modal
@@ -111,6 +115,25 @@ const DepotLayoutEdit = ({ isOpen, depot, onSave, onClose }) => {
       isFormValid={isFormValid && !loading}
       resetForm={resetForm}
     >
+      {/* Message de succès */}
+      {success && (
+        <div className="row">
+          <div className="col mb-3">
+            <Alert severity="success">
+              Le dépôt a été modifié avec succès !
+            </Alert>
+          </div>
+        </div>
+      )}
+
+      {/* Message d'erreur */}
+      {error && (
+        <div className="row">
+          <div className="col mb-3">
+            <Alert severity="error">{error}</Alert>
+          </div>
+        </div>
+      )}
 
       {/* Champ Nom du dépôt */}
       <div className="row">
@@ -118,6 +141,7 @@ const DepotLayoutEdit = ({ isOpen, depot, onSave, onClose }) => {
           <TextField
             label="Nom du dépôt"
             fullWidth
+            required
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '8px',
@@ -135,7 +159,9 @@ const DepotLayoutEdit = ({ isOpen, depot, onSave, onClose }) => {
             }}
             value={nom}
             onChange={(e) => handleChange('nom', e.target.value)}
-            disabled
+            disabled={loading}
+            error={!nom.trim() && nom !== ''}
+            helperText={!nom.trim() && nom !== '' ? 'Le nom est requis' : ''}
           />
         </div>
       </div>

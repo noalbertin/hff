@@ -48,8 +48,14 @@ const MouvementView = () => {
     try {
       const endpoint = depotId ? `mouvements/depot/${depotId}` : 'mouvements'
       const { data } = await api.get(endpoint)
-      setMouvements(data)
-      setFilteredMouvements(data)
+
+      // ⭐ TRI PAR DATE DÉCROISSANTE (plus récent en haut)
+      const sortedData = data.sort((a, b) => {
+        return new Date(b.created_at) - new Date(a.created_at)
+      })
+
+      setMouvements(sortedData)
+      setFilteredMouvements(sortedData)
     } catch (error) {
       console.error('Erreur lors du chargement des mouvements:', error)
       setSnackbarMessage('Erreur lors du chargement des mouvements')
@@ -102,6 +108,9 @@ const MouvementView = () => {
         )
       })
     }
+
+    // ⭐ MAINTENIR LE TRI PAR DATE après le filtrage
+    filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 
     setFilteredMouvements(filtered)
   }, [searchTerm, filterType, mouvements])
@@ -183,7 +192,6 @@ const MouvementView = () => {
       label: 'Utilisateur',
       render: (row) => row.utilisateur || '-',
     },
-    
     {
       id: 'commentaire',
       label: 'Commentaire',
@@ -199,7 +207,6 @@ const MouvementView = () => {
         </div>
       ),
     },
-
   ]
 
   // Créer un mouvement

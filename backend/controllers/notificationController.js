@@ -228,7 +228,8 @@ export const getPreventiveMaintenanceNotifications = async (req, res) => {
     console.error('Erreur getPreventiveMaintenanceNotifications:', error)
     res.status(500).json({
       success: false,
-      message: 'Erreur lors de la récupération des notifications de maintenance préventive',
+      message:
+        'Erreur lors de la récupération des notifications de maintenance préventive',
       error: error.message,
     })
   }
@@ -280,7 +281,8 @@ export const getCurativeMaintenanceNotifications = async (req, res) => {
     console.error('Erreur getCurativeMaintenanceNotifications:', error)
     res.status(500).json({
       success: false,
-      message: 'Erreur lors de la récupération des notifications de maintenance curative',
+      message:
+        'Erreur lors de la récupération des notifications de maintenance curative',
       error: error.message,
     })
   }

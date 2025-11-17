@@ -69,7 +69,10 @@ export const getDepotStats = async (req, res) => {
       mouvements_jour: mouvementsJour[0].total || 0,
     })
   } catch (err) {
-    console.error('Erreur lors de la récupération des statistiques:', err.message)
+    console.error(
+      'Erreur lors de la récupération des statistiques:',
+      err.message
+    )
     res.status(500).json({ error: 'Erreur serveur' })
   }
 }
@@ -129,10 +132,9 @@ export const createDepot = async (req, res) => {
 
   try {
     // Vérifier si le nom existe déjà
-    const [existing] = await db.query(
-      'SELECT id FROM depot WHERE nom = ?',
-      [nom]
-    )
+    const [existing] = await db.query('SELECT id FROM depot WHERE nom = ?', [
+      nom,
+    ])
     if (existing.length > 0) {
       return res.status(400).json({ error: 'Ce dépôt existe déjà.' })
     }

@@ -28,9 +28,9 @@ import PersonIcon from '@mui/icons-material/Person'
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
-import InventoryIcon from '@mui/icons-material/Inventory';
-import WarehouseIcon from '@mui/icons-material/Warehouse';
-import PhoneIcon from '@mui/icons-material/Phone';
+import InventoryIcon from '@mui/icons-material/Inventory'
+import WarehouseIcon from '@mui/icons-material/Warehouse'
+import PhoneIcon from '@mui/icons-material/Phone'
 import api from '../../../../utils/axios'
 
 const DetailMaterielView = () => {
@@ -395,217 +395,217 @@ const DetailMaterielView = () => {
       {/* Contenu principal */}
       <Box sx={{ maxWidth: 1400, mx: 'auto', px: 3, mt: -3 }}>
         {/* Carte Statut */}
-       <Card
-  elevation={0}
-  sx={{
-    mb: 3,
-    borderRadius: 3,
-    border: '1px solid #e2e8f0',
-    background: '#fff',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-  }}
->
-  <CardContent sx={{ p: 3 }}>
-    <Grid container spacing={3} alignItems="center">
-      {/* Statut */}
-      <Grid item xs={12} sm={6} md={3}>
-        <Box>
-          <Typography
-            variant="caption"
-            sx={{
-              color: '#64748b',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              fontSize: '0.7rem',
-            }}
-          >
-            Statut Actuel
-          </Typography>
-          <Box sx={{ mt: 1 }}>
-            <StatutChip statut={materiel.statut} />
-          </Box>
-        </Box>
-      </Grid>
+        <Card
+          elevation={0}
+          sx={{
+            mb: 3,
+            borderRadius: 3,
+            border: '1px solid #e2e8f0',
+            background: '#fff',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+          }}
+        >
+          <CardContent sx={{ p: 3 }}>
+            <Grid container spacing={3} alignItems="center">
+              {/* Statut */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: '#64748b',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      fontSize: '0.7rem',
+                    }}
+                  >
+                    Statut Actuel
+                  </Typography>
+                  <Box sx={{ mt: 1 }}>
+                    <StatutChip statut={materiel.statut} />
+                  </Box>
+                </Box>
+              </Grid>
 
-      {/* N° Parc */}
-      <Grid item xs={12} sm={6} md={3}>
-        <InfoField label="N° Parc" value={materiel.num_parc} />
-      </Grid>
+              {/* N° Parc */}
+              <Grid item xs={12} sm={6} md={3}>
+                <InfoField label="N° Parc" value={materiel.num_parc} />
+              </Grid>
 
-      {/* Parc Colas */}
-      <Grid item xs={12} sm={6} md={3}>
-        <InfoField label="Parc Colas" value={materiel.parc_colas} />
-      </Grid>
+              {/* Parc Colas */}
+              <Grid item xs={12} sm={6} md={3}>
+                <InfoField label="Parc Colas" value={materiel.parc_colas} />
+              </Grid>
 
-      {/* Suivi Actif */}
-      <Grid item xs={12} sm={6} md={3}>
-        <BooleanIndicator label="Suivi Actif" value={materiel.suivi} />
-      </Grid>
+              {/* Suivi Actif */}
+              <Grid item xs={12} sm={6} md={3}>
+                <BooleanIndicator label="Suivi Actif" value={materiel.suivi} />
+              </Grid>
 
-      {/* === NOUVELLES INFORMATIONS DÉPÔT ET STOCK === */}
-      
-      {/* Dépôt */}
-      <Grid item xs={12} sm={6} md={3}>
-        <Box>
-          <Typography
-            variant="caption"
-            sx={{
-              color: '#64748b',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              fontSize: '0.7rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.5,
-            }}
-          >
-            <WarehouseIcon sx={{ fontSize: '0.9rem' }} />
-            Dépôt
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              mt: 0.5,
-              fontWeight: 600,
-              color: '#1e293b',
-              fontSize: '0.95rem',
-            }}
-          >
-            {materiel.depot_nom || 'Non affecté'}
-          </Typography>
-        </Box>
-      </Grid>
+              {/* === NOUVELLES INFORMATIONS DÉPÔT ET STOCK === */}
 
-      {/* Responsable */}
-      <Grid item xs={12} sm={6} md={3}>
-        <Box>
-          <Typography
-            variant="caption"
-            sx={{
-              color: '#64748b',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              fontSize: '0.7rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.5,
-            }}
-          >
-            <PersonIcon sx={{ fontSize: '0.9rem' }} />
-            Responsable
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              mt: 0.5,
-              fontWeight: 600,
-              color: '#1e293b',
-              fontSize: '0.95rem',
-            }}
-          >
-            {materiel.depot_responsable || 'Non renseigné'}
-          </Typography>
-        </Box>
-      </Grid>
+              {/* Dépôt */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: '#64748b',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      fontSize: '0.7rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                    }}
+                  >
+                    <WarehouseIcon sx={{ fontSize: '0.9rem' }} />
+                    Dépôt
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      mt: 0.5,
+                      fontWeight: 600,
+                      color: '#1e293b',
+                      fontSize: '0.95rem',
+                    }}
+                  >
+                    {materiel.depot_nom || 'Non affecté'}
+                  </Typography>
+                </Box>
+              </Grid>
 
-      {/* Contact */}
-      <Grid item xs={12} sm={6} md={3}>
-        <Box>
-          <Typography
-            variant="caption"
-            sx={{
-              color: '#64748b',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              fontSize: '0.7rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.5,
-            }}
-          >
-            <PhoneIcon sx={{ fontSize: '0.9rem' }} />
-            Contact
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              mt: 0.5,
-              fontWeight: 600,
-              color: '#1e293b',
-              fontSize: '0.95rem',
-            }}
-          >
-            {materiel.contact_responsable || 'Non affecté'}
-          </Typography>
-        </Box>
-      </Grid>
+              {/* Responsable */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: '#64748b',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      fontSize: '0.7rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                    }}
+                  >
+                    <PersonIcon sx={{ fontSize: '0.9rem' }} />
+                    Responsable
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      mt: 0.5,
+                      fontWeight: 600,
+                      color: '#1e293b',
+                      fontSize: '0.95rem',
+                    }}
+                  >
+                    {materiel.depot_responsable || 'Non renseigné'}
+                  </Typography>
+                </Box>
+              </Grid>
 
-      {/* Quantité en stock */}
-      <Grid item xs={12} sm={6} md={3}>
-        <Box>
-          <Typography
-            variant="caption"
-            sx={{
-              color: '#64748b',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              fontSize: '0.7rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.5,
-            }}
-          >
-            <InventoryIcon sx={{ fontSize: '0.9rem' }} />
-            Quantité en Stock
-          </Typography>
-          <Box 
-            sx={{ 
-              mt: 0.5, 
-              display: 'flex', 
-              alignItems: 'center',
-              gap: 1
-            }}
-          >
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 700,
-                color: '#1e293b',
-              }}
-            >
-              {materiel.quantite || 0}
-            </Typography>
-            {materiel.quantite !== null && (
-              <Chip
-                label={
-                  materiel.quantite > 9
-                    ? 'Bon stock' 
-                    : materiel.quantite > 4
-                    ? 'Stock faible' 
-                    : 'Rupture'
-                }
-                size="small"
-                color={
-                  materiel.quantite > 9
-                    ? 'success' 
-                    : materiel.quantite > 4
-                    ? 'warning' 
-                    : 'error'
-                }
-                sx={{ fontWeight: 600, fontSize: '0.7rem' }}
-              />
-            )}
-          </Box>
-        </Box>
-      </Grid>
-    </Grid>
-  </CardContent>
-</Card>
+              {/* Contact */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: '#64748b',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      fontSize: '0.7rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                    }}
+                  >
+                    <PhoneIcon sx={{ fontSize: '0.9rem' }} />
+                    Contact
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      mt: 0.5,
+                      fontWeight: 600,
+                      color: '#1e293b',
+                      fontSize: '0.95rem',
+                    }}
+                  >
+                    {materiel.contact_responsable || 'Non affecté'}
+                  </Typography>
+                </Box>
+              </Grid>
+
+              {/* Quantité en stock */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: '#64748b',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      fontSize: '0.7rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                    }}
+                  >
+                    <InventoryIcon sx={{ fontSize: '0.9rem' }} />
+                    Quantité en Stock
+                  </Typography>
+                  <Box
+                    sx={{
+                      mt: 0.5,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                    }}
+                  >
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        fontWeight: 700,
+                        color: '#1e293b',
+                      }}
+                    >
+                      {materiel.quantite || 0}
+                    </Typography>
+                    {materiel.quantite !== null && (
+                      <Chip
+                        label={
+                          materiel.quantite > 9
+                            ? 'Bon stock'
+                            : materiel.quantite > 4
+                            ? 'Stock faible'
+                            : 'Rupture'
+                        }
+                        size="small"
+                        color={
+                          materiel.quantite > 9
+                            ? 'success'
+                            : materiel.quantite > 4
+                            ? 'warning'
+                            : 'error'
+                        }
+                        sx={{ fontWeight: 600, fontSize: '0.7rem' }}
+                      />
+                    )}
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
 
         {/* Informations Principales */}
         <SectionCard

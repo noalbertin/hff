@@ -237,12 +237,13 @@ CREATE TABLE depot (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Données par défaut
-INSERT INTO depot (nom, responsable) VALUES
-('Depot 1', 'Sylvano', 'Betania tanambao', '0333333333'),
-('Depot 2', 'Rakoto', 'Betania Centre', '0343443434'),
-('Depot 3', 'Rabe', 'Sanfils', '0323233232');
-
+-- ============================================
+-- Insertion de données de test
+-- ============================================
+INSERT INTO depot (nom, responsable, adresse, contact) VALUES
+('Depot Central', 'Jean Dupont', 'Betania Tanambao', '+261 33 33 333 33'),
+('Depot Secondaire', 'Marie Martin', 'Ampasikibo', '+261 34 34 334 34 '),
+('Depot Tertiaire', 'Pierre Durant', 'Andaboly', '+261 32 32 332 32');
 
 -- Table des stocks par dépôt
 CREATE TABLE stock (

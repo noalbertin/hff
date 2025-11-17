@@ -69,7 +69,6 @@ export const getMaterielsWithoutMaintenance = async (req, res) => {
   }
 }
 
-
 //Récupérer les matériels qui n'ont PAS encore de stock dans aucun dépôt
 export const getMaterielsWithoutStock = async (req, res) => {
   try {
@@ -91,7 +90,8 @@ export const getMaterielsWithoutStock = async (req, res) => {
 export const getMaterielsWithoutStockInDepot = async (req, res) => {
   const { depotId } = req.params
   try {
-    const [rows] = await db.query(`
+    const [rows] = await db.query(
+      `
       SELECT m.*
       FROM materiel m
       WHERE m.id NOT IN (
@@ -100,7 +100,9 @@ export const getMaterielsWithoutStockInDepot = async (req, res) => {
         WHERE depot_id = ?
       )
       ORDER BY m.designation
-    `, [depotId])
+    `,
+      [depotId]
+    )
     res.json(rows)
   } catch (err) {
     console.error('Erreur MySQL:', err.message)
