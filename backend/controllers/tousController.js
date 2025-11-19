@@ -62,15 +62,17 @@ export const getTousMateriels = async (req, res) => {
       LEFT JOIN flotte f ON m.id = f.materiel_id
       
       LEFT JOIN (
-        SELECT 
-          a1.*
-        FROM attachement a1
-        INNER JOIN (
-          SELECT materiel_id, MAX(date_utilise) AS max_date
+        SELECT *
+        FROM (
+          SELECT 
+            *,
+            ROW_NUMBER() OVER (
+              PARTITION BY materiel_id 
+              ORDER BY date_utilise DESC, id DESC
+            ) AS rn
           FROM attachement
-          GROUP BY materiel_id
-        ) a2 ON a1.materiel_id = a2.materiel_id 
-            AND a1.date_utilise = a2.max_date
+        ) ranked
+        WHERE rn = 1
       ) a ON m.id = a.materiel_id
       
       LEFT JOIN documents_administratifs da ON f.id_flotte = da.flotte_id
@@ -161,15 +163,17 @@ export const getTousMaterielById = async (req, res) => {
       LEFT JOIN flotte f ON m.id = f.materiel_id
       
       LEFT JOIN (
-        SELECT 
-          a1.*
-        FROM attachement a1
-        INNER JOIN (
-          SELECT materiel_id, MAX(date_utilise) AS max_date
+        SELECT *
+        FROM (
+          SELECT 
+            *,
+            ROW_NUMBER() OVER (
+              PARTITION BY materiel_id 
+              ORDER BY date_utilise DESC, id DESC
+            ) AS rn
           FROM attachement
-          GROUP BY materiel_id
-        ) a2 ON a1.materiel_id = a2.materiel_id 
-            AND a1.date_utilise = a2.max_date
+        ) ranked
+        WHERE rn = 1
       ) a ON m.id = a.materiel_id
       
       LEFT JOIN documents_administratifs da ON f.id_flotte = da.flotte_id

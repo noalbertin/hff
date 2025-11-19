@@ -1,4 +1,5 @@
 import { Route, Routes, Navigate } from 'react-router-dom'
+import { DepotProvider } from '../contexts/DepotContext'
 import Login from '../views/authentication/login'
 import Register from '../views/authentication/register'
 import Profile from '../views/account/profile'
@@ -13,7 +14,7 @@ import Utilisateur from '../views/dashboard/user/UserView'
 
 // Routes Flotte
 import Flotte from '../views/dashboard/flotte/FlotteViews'
-import MaintenancePreventive from '../views/dashboard/flotte/maintenancePreventive/MaintenancePreventiveViews'
+import FlotteAdd from '../views/dashboard/flotte/flotte/FlotteViews'
 import DocumentsAdministratifs from '../views/dashboard/flotte/documentsAdministratifs/DocumentsAdministratifsViews'
 import Operateurs from '../views/dashboard/flotte/operateurs/OperateursViews'
 import DetailMateriel from '../views/dashboard/flotte/detailmateriel/DetailMaterielView'
@@ -85,7 +86,7 @@ const AppRoutes = ({ user, isLoggedIn }) => {
         path="/flotte/ajout-flotte"
         element={
           <Layout user={user}>
-            <MaintenancePreventive user={user} />
+            <FlotteAdd user={user} />
           </Layout>
         }
       />
@@ -111,7 +112,9 @@ const AppRoutes = ({ user, isLoggedIn }) => {
         path="/depot/:depotId/*"
         element={
           <Layout user={user}>
-            <DepotLayout user={user} />
+            <DepotProvider>
+              <DepotLayout user={user} />
+            </DepotProvider>
           </Layout>
         }
       >

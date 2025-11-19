@@ -54,7 +54,6 @@ const MouvementCreate = ({ isOpen, onSave, onClose, depotId }) => {
     }
   }, [depotId])
 
-  // ✅ CORRECTION : Charger les matériels en fonction du dépôt ET du type de mouvement
   useEffect(() => {
     const fetchMaterielsFromDepot = async () => {
       if (!mouvement.depot_id) {
@@ -216,14 +215,6 @@ const MouvementCreate = ({ isOpen, onSave, onClose, depotId }) => {
     value: String(d.id),
     label: `${d.nom} - ${d.responsable}`,
   }))
-
-  // Options pour dépôt destination (exclure le dépôt source)
-  const depotDestinationOptions = depots
-    .filter((d) => String(d.id) !== mouvement.depot_id)
-    .map((d) => ({
-      value: String(d.id),
-      label: `${d.nom} - ${d.responsable}`,
-    }))
 
   // Style pour les champs
   const textFieldStyle = {

@@ -24,10 +24,12 @@ import MouvementEdit from './MouvementEdit'
 import api from '../../../../utils/axios'
 import dayjs from 'dayjs'
 import { useOutletContext } from 'react-router-dom'
+import { useDepotContext } from '../../../../contexts/DepotContext'
 
 const MouvementView = () => {
   const context = useOutletContext()
   const depotId = context?.depotId
+  const { triggerRefresh } = useDepotContext()
 
   const [mouvements, setMouvements] = useState([])
   const [filteredMouvements, setFilteredMouvements] = useState([])
@@ -220,6 +222,7 @@ const MouvementView = () => {
       const { data } = await api.post('mouvements', mouvement)
       console.log('Created:', data)
       await fetchMouvements()
+      triggerRefresh()
       setOpenCreateModal(false)
       setSnackbarMessage('Mouvement enregistré avec succès')
       setSnackbarSeverity('success')
@@ -279,6 +282,7 @@ const MouvementView = () => {
       await api.patch(`mouvements/${mouvementToCancel.id}/cancel`)
       console.log('Cancelled:', mouvementToCancel)
       await fetchMouvements()
+      triggerRefresh()
       setOpenDialog(false)
       setSnackbarMessage('Mouvement annulé avec succès')
       setSnackbarSeverity('success')

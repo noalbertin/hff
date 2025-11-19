@@ -14,6 +14,7 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Visibility as VisibilityIcon,
+  InboxOutlined as InboxIcon,
 } from '@mui/icons-material'
 import PaginationComponent from './PaginationComponent'
 import BpCheckbox from './BpCheckbox'
@@ -56,7 +57,7 @@ function TableView({
   const canDelete = isAdmin
   const canSelectMultiple = isAdmin
 
-  const [order, setOrder] = useState('asc')
+  const [order, setOrder] = useState('desc')
   const [orderBy, setOrderBy] = useState('id')
   const [page, setPage] = useState(0)
   const [selected, setSelected] = useState([])
@@ -241,7 +242,6 @@ function TableView({
           maxHeight: '500px',
           overflowY: 'auto',
           overflowX: 'auto',
-          cursor: 'grab',
           '&::-webkit-scrollbar': {
             width: '8px',
             height: '8px',
@@ -261,7 +261,6 @@ function TableView({
         <Table stickyHeader sx={{ minWidth: 'max-content' }}>
           <TableHead>
             <TableRow>
-              {/* ✅ Checkboxes seulement pour admin */}
               {showCheckboxes && canSelectMultiple && (
                 <TableCell
                   padding="checkbox"
@@ -334,91 +333,138 @@ function TableView({
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedData.map((row) => {
-              const isItemSelected = selected.indexOf(row.id) !== -1
-              return (
-                <TableRow
-                  key={row.id}
-                  selected={isItemSelected}
-                  style={{
-                    backgroundColor: isItemSelected
-                      ? 'rgba(3, 81, 171, 0.04)'
-                      : 'inherit',
+            {/* ✅ Affichage quand il n'y a pas de données */}
+            {paginatedData.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={
+                    columns.length +
+                    (showCheckboxes && canSelectMultiple ? 1 : 0) +
+                    (shouldShowActions ? 1 : 0)
+                  }
+                  sx={{
+                    borderBottom: 'none !important',
+                    padding: '60px 20px',
                   }}
                 >
-                  {/* ✅ Checkboxes seulement pour admin */}
-                  {showCheckboxes && canSelectMultiple && (
-                    <TableCell
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#637381',
+                    }}
+                  >
+                    <InboxIcon
                       sx={{
-                        borderBottom: '1px dashed #e0e0e0 !important',
-                        position: 'sticky',
-                        left: 0,
-                        backgroundColor: isItemSelected
-                          ? 'rgba(3, 81, 171, 0.04)'
-                          : '#fff',
-                        zIndex: 2,
+                        fontSize: '80px',
+                        color: '#DFE3E8',
+                        marginBottom: '16px',
                       }}
-                      padding="checkbox"
-                    >
-                      <BpCheckbox
-                        checked={isItemSelected}
-                        onChange={(event) =>
-                          handleCheckboxChange(event, row.id)
-                        }
-                      />
-                    </TableCell>
-                  )}
-                  {columns.map((column) => (
-                    <TableCell
+                    />
+                    <Box
                       sx={{
-                        borderBottom: '1px dashed #e0e0e0 !important',
-                        whiteSpace: 'nowrap',
-                        minWidth: '150px',
-                      }}
-                      key={column.id}
-                    >
-                      {column.render ? column.render(row) : row[column.id]}
-                    </TableCell>
-                  ))}
-                  {shouldShowActions && (
-                    <TableCell
-                      align="right"
-                      sx={{
-                        borderBottom: '1px dashed #e0e0e0 !important',
-                        position: 'sticky',
-                        right: 0,
-                        backgroundColor: isItemSelected
-                          ? 'rgba(3, 81, 171, 0.04)'
-                          : '#fff',
-                        zIndex: 2,
-                        whiteSpace: 'nowrap',
+                        fontSize: '18px',
+                        fontWeight: '600',
+                        marginBottom: '8px',
                       }}
                     >
-                      {/* ✅ Icône Voir - Toujours visible */}
-                      {showViewIcon && onView && (
-                        <IconButton onClick={() => onView(row)}>
-                          <VisibilityIcon color="info" />
-                        </IconButton>
-                      )}
-
-                      {/* ✅ Icône Edit - Seulement pour admin */}
-                      {showEditIcon && canEdit && (
-                        <IconButton onClick={() => onEdit(row)}>
-                          <EditIcon color="primary" />
-                        </IconButton>
-                      )}
-
-                      {/* ✅ Icône Delete - Seulement pour admin */}
-                      {showDeleteIcon && canDelete && (
-                        <IconButton onClick={() => onDelete(row)}>
-                          <DeleteIcon color="error" />
-                        </IconButton>
-                      )}
-                    </TableCell>
-                  )}
-                </TableRow>
-              )
-            })}
+                      Aucune donnée disponible
+                    </Box>
+                    <Box
+                      sx={{
+                        fontSize: '14px',
+                        color: '#919EAB',
+                      }}
+                    >
+                      Les données apparaîtront ici une fois ajoutées
+                    </Box>
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ) : (
+              // ✅ Affichage normal des données
+              paginatedData.map((row) => {
+                const isItemSelected = selected.indexOf(row.id) !== -1
+                return (
+                  <TableRow
+                    key={row.id}
+                    selected={isItemSelected}
+                    style={{
+                      backgroundColor: isItemSelected
+                        ? 'rgba(3, 81, 171, 0.04)'
+                        : 'inherit',
+                    }}
+                  >
+                    {showCheckboxes && canSelectMultiple && (
+                      <TableCell
+                        sx={{
+                          borderBottom: '1px dashed #e0e0e0 !important',
+                          position: 'sticky',
+                          left: 0,
+                          backgroundColor: isItemSelected
+                            ? 'rgba(3, 81, 171, 0.04)'
+                            : '#fff',
+                          zIndex: 2,
+                        }}
+                        padding="checkbox"
+                      >
+                        <BpCheckbox
+                          checked={isItemSelected}
+                          onChange={(event) =>
+                            handleCheckboxChange(event, row.id)
+                          }
+                        />
+                      </TableCell>
+                    )}
+                    {columns.map((column) => (
+                      <TableCell
+                        sx={{
+                          borderBottom: '1px dashed #e0e0e0 !important',
+                          whiteSpace: 'nowrap',
+                          minWidth: '150px',
+                        }}
+                        key={column.id}
+                      >
+                        {column.render ? column.render(row) : row[column.id]}
+                      </TableCell>
+                    ))}
+                    {shouldShowActions && (
+                      <TableCell
+                        align="right"
+                        sx={{
+                          borderBottom: '1px dashed #e0e0e0 !important',
+                          position: 'sticky',
+                          right: 0,
+                          backgroundColor: isItemSelected
+                            ? 'rgba(3, 81, 171, 0.04)'
+                            : '#fff',
+                          zIndex: 2,
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {showViewIcon && onView && (
+                          <IconButton onClick={() => onView(row)}>
+                            <VisibilityIcon color="info" />
+                          </IconButton>
+                        )}
+                        {showEditIcon && canEdit && (
+                          <IconButton onClick={() => onEdit(row)}>
+                            <EditIcon color="primary" />
+                          </IconButton>
+                        )}
+                        {showDeleteIcon && canDelete && (
+                          <IconButton onClick={() => onDelete(row)}>
+                            <DeleteIcon color="error" />
+                          </IconButton>
+                        )}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                )
+              })
+            )}
           </TableBody>
         </Table>
       </TableContainer>

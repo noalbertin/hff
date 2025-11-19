@@ -1,8 +1,10 @@
 // hooks/useDepotStats.js
 import { useState, useEffect } from 'react'
 import api from '../utils/axios'
+import { useDepotContext } from '../contexts/DepotContext'
 
 export const useDepotStats = (depotId) => {
+  const { refreshTrigger } = useDepotContext()
   const [stockCount, setStockCount] = useState(0)
   const [quantiteTotal, setQuantiteTotal] = useState(0)
   const [mouvementsCount, setMouvementsCount] = useState(0)
@@ -49,7 +51,7 @@ export const useDepotStats = (depotId) => {
     // Rafraîchir les données toutes les 2 minutes
     const interval = setInterval(fetchStats, 120000)
     return () => clearInterval(interval)
-  }, [depotId])
+  }, [depotId, refreshTrigger])
 
   return {
     stockCount,

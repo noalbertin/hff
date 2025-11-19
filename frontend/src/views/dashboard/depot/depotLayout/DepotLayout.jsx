@@ -8,6 +8,7 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material'
+import { useAuthStore, selectUser } from '../../../../store/auth'
 import WarehouseIcon from '@mui/icons-material/Warehouse'
 import PersonIcon from '@mui/icons-material/Person'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
@@ -22,6 +23,7 @@ const DepotLayout = ({ user }) => {
   const { depotId } = useParams()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const { role: userRole, id_user: currentUserId } = useAuthStore(selectUser)
 
   // États
   const [depot, setDepot] = useState(null)
@@ -178,21 +180,23 @@ const DepotLayout = ({ user }) => {
               {depot.nom}
             </Typography>
 
-            {/* Bouton modifier */}
-            <IconButton
-              onClick={handleOpenModal}
-              sx={{
-                background: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                '&:hover': {
-                  background: 'rgba(255, 255, 255, 0.3)',
-                },
-              }}
-            >
-              <EditIcon />
-            </IconButton>
+            {userRole === 'admin' && (
+              // Bouton modifier (admin seulement)
+              <IconButton
+                onClick={handleOpenModal}
+                sx={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  '&:hover': {
+                    background: 'rgba(255, 255, 255, 0.3)',
+                  },
+                }}
+              >
+                <EditIcon />
+              </IconButton>
+            )}
           </Box>
 
           {/* Informations du dépôt */}

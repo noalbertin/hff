@@ -12,13 +12,13 @@ import CloseIcon from '@mui/icons-material/Close'
 import TableView from '../../../../components/ui-table/TableView'
 import ConfirmationDialog from '../../../../components/ui/ConfirmationDialog'
 import Breadcrumb from '../../../../components/ui/Breadcrumb'
-import MaintenancePreventiveEdit from './MaintenancePreventiveEdit'
-import MaintenancePreventiveCreate from './MaintenancePreventiveCreate'
+import FlotteEdit from './FlotteEdit'
+import FlotteCreate from './FlotteCreate'
 import api from '../../../../utils/axios'
 import dayjs from 'dayjs'
 import { useAuthStore, selectUser } from '../../../../store/auth'
 
-const MaintenancePreventiveViews = () => {
+const FlotteViews = () => {
   const [flotte, setFlotte] = useState([])
   const [filteredFlotte, setFilteredFlotte] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -337,14 +337,14 @@ const MaintenancePreventiveViews = () => {
         />
       </Box>
 
-      <MaintenancePreventiveCreate
+      <FlotteCreate
         isOpen={openCreateModal}
         onSave={handleSaveCreate}
         onClose={() => setOpenCreateModal(false)}
         flotteList={flotteList}
       />
 
-      <MaintenancePreventiveEdit
+      <FlotteEdit
         isOpen={openEditModal}
         maintenance={selectedFlotte}
         onChange={(updated) => setSelectedFlotte(updated)}
@@ -379,4 +379,4 @@ const MaintenancePreventiveViews = () => {
   )
 }
 
-export default MaintenancePreventiveViews
+export default FlotteViews

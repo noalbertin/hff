@@ -14,7 +14,7 @@ export const getMateriels = async (req, res) => {
       FROM materiel m
       LEFT JOIN stock s ON m.id = s.materiel_id
       LEFT JOIN depot d ON s.depot_id = d.id
-      ORDER BY m.id DESC
+      ORDER BY m.created_at DESC
     `)
     res.json(rows)
   } catch (err) {

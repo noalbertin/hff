@@ -246,11 +246,9 @@ export const getMouvementsByDepot24h = async (req, res) => {
     res.json(rows)
   } catch (err) {
     console.error('Erreur getMouvementsByDepot24h:', err)
-    res
-      .status(500)
-      .json({
-        error: 'Erreur lors de la récupération des mouvements du dépôt.',
-      })
+    res.status(500).json({
+      error: 'Erreur lors de la récupération des mouvements du dépôt.',
+    })
   }
 }
 
@@ -307,11 +305,9 @@ export const createMouvement = async (req, res) => {
 
       if (depot_id === depot_destination_id) {
         await connection.rollback()
-        return res
-          .status(400)
-          .json({
-            error: 'Le dépôt source et destination doivent être différents.',
-          })
+        return res.status(400).json({
+          error: 'Le dépôt source et destination doivent être différents.',
+        })
       }
     }
 

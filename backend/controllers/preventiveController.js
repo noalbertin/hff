@@ -14,19 +14,26 @@ export const getMaintenancesPreventives = async (req, res) => {
         m.modele,
         f.id_flotte,
         f.annee,
-        (SELECT km_fin FROM attachement 
-         WHERE materiel_id = m.id 
-         ORDER BY date_utilise DESC LIMIT 1) AS dernier_km,
-        (SELECT heure_fin FROM attachement 
-         WHERE materiel_id = m.id 
-         ORDER BY date_utilise DESC LIMIT 1) AS derniere_heure,
-        (SELECT date_utilise FROM attachement 
-         WHERE materiel_id = m.id 
-         ORDER BY date_utilise DESC LIMIT 1) AS derniere_date_utilise
+        a.km_fin AS dernier_km,
+        a.heure_fin AS derniere_heure,
+        a.date_utilise AS derniere_date_utilise
       FROM maintenance_preventive mp
       INNER JOIN materiel m ON mp.materiel_id = m.id
       LEFT JOIN flotte f ON m.id = f.materiel_id
-      ORDER BY mp.date_planifiee DESC
+      LEFT JOIN (
+        SELECT *
+        FROM (
+          SELECT 
+            *,
+            ROW_NUMBER() OVER (
+              PARTITION BY materiel_id 
+              ORDER BY date_utilise DESC, id DESC
+            ) AS rn
+          FROM attachement
+        ) ranked
+        WHERE rn = 1
+      ) a ON m.id = a.materiel_id
+      ORDER BY mp.date_planifiee ASC
     `)
     res.json(rows)
   } catch (err) {
@@ -35,7 +42,7 @@ export const getMaintenancesPreventives = async (req, res) => {
   }
 }
 
-// Récupérer une maintenance préventive par ID
+/// Récupérer une maintenance préventive par ID
 export const getMaintenancePreventiveById = async (req, res) => {
   const { id } = req.params
   try {
@@ -48,18 +55,25 @@ export const getMaintenancePreventiveById = async (req, res) => {
         m.parc_colas,
         f.id_flotte,
         f.annee,
-        (SELECT km_debut FROM attachement 
-         WHERE materiel_id = m.id 
-         ORDER BY date_utilise DESC LIMIT 1) AS dernier_km,
-        (SELECT heure_fin FROM attachement 
-         WHERE materiel_id = m.id 
-         ORDER BY date_utilise DESC LIMIT 1) AS derniere_heure,
-        (SELECT date_utilise FROM attachement 
-         WHERE materiel_id = m.id 
-         ORDER BY date_utilise DESC LIMIT 1) AS derniere_date_utilise
+        a.km_fin AS dernier_km,
+        a.heure_fin AS derniere_heure,
+        a.date_utilise AS derniere_date_utilise
       FROM maintenance_preventive mp
       INNER JOIN materiel m ON mp.materiel_id = m.id
       LEFT JOIN flotte f ON m.id = f.materiel_id
+      LEFT JOIN (
+        SELECT *
+        FROM (
+          SELECT 
+            *,
+            ROW_NUMBER() OVER (
+              PARTITION BY materiel_id 
+              ORDER BY date_utilise DESC, id DESC
+            ) AS rn
+          FROM attachement
+        ) ranked
+        WHERE rn = 1
+      ) a ON m.id = a.materiel_id
       WHERE mp.id_maintenance_preventive = ?
     `,
       [id]
@@ -89,17 +103,24 @@ export const getMaintenancesByMaterielId = async (req, res) => {
         m.designation,
         m.num_parc,
         m.parc_colas,
-        (SELECT km_debut FROM attachement 
-         WHERE materiel_id = m.id 
-         ORDER BY date_utilise DESC LIMIT 1) AS dernier_km,
-        (SELECT heure_fin FROM attachement 
-         WHERE materiel_id = m.id 
-         ORDER BY date_utilise DESC LIMIT 1) AS derniere_heure,
-        (SELECT date_utilise FROM attachement 
-         WHERE materiel_id = m.id 
-         ORDER BY date_utilise DESC LIMIT 1) AS derniere_date_utilise
+        a.km_fin AS dernier_km,
+        a.heure_fin AS derniere_heure,
+        a.date_utilise AS derniere_date_utilise
       FROM maintenance_preventive mp
       INNER JOIN materiel m ON mp.materiel_id = m.id
+      LEFT JOIN (
+        SELECT *
+        FROM (
+          SELECT 
+            *,
+            ROW_NUMBER() OVER (
+              PARTITION BY materiel_id 
+              ORDER BY date_utilise DESC, id DESC
+            ) AS rn
+          FROM attachement
+        ) ranked
+        WHERE rn = 1
+      ) a ON m.id = a.materiel_id
       WHERE mp.materiel_id = ?
       ORDER BY mp.date_planifiee DESC
     `,

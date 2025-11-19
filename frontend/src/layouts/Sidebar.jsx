@@ -22,6 +22,10 @@ export const refreshSidebarDepots = () => {
   window.dispatchEvent(new CustomEvent('refreshDepots'))
 }
 
+export const refreshNotifications = () => {
+  window.dispatchEvent(new CustomEvent('refreshNotifications'))
+}
+
 const Sidebar = () => {
   const [notificationCount, setNotificationCount] = useState(0)
   const [notificationPriorities, setNotificationPriorities] = useState({
@@ -35,15 +39,20 @@ const Sidebar = () => {
     fetchNotificationCount()
     fetchDepots()
 
-    // Écouter l'événement de rafraîchissement personnalisé
     const handleRefreshDepots = () => {
       console.log('🔄 Rafraîchissement des dépôts...')
       fetchDepots()
     }
 
-    window.addEventListener('refreshDepots', handleRefreshDepots)
+    // ✅ Nouvel écouteur pour les notifications
+    const handleRefreshNotifications = () => {
+      console.log('🔔 Rafraîchissement des notifications...')
+      fetchNotificationCount()
+    }
 
-    // Rafraîchir périodiquement (toutes les 30 secondes)
+    window.addEventListener('refreshDepots', handleRefreshDepots)
+    window.addEventListener('refreshNotifications', handleRefreshNotifications)
+
     const interval = setInterval(() => {
       fetchNotificationCount()
       fetchDepots()
@@ -51,6 +60,10 @@ const Sidebar = () => {
 
     return () => {
       window.removeEventListener('refreshDepots', handleRefreshDepots)
+      window.removeEventListener(
+        'refreshNotifications',
+        handleRefreshNotifications
+      )
       clearInterval(interval)
     }
   }, [])

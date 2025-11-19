@@ -111,7 +111,7 @@ const CamionViews = () => {
                 : '#0d9488',
           }}
         >
-          {row.depot_nom}
+          {row.depot_nom || 'Non affecté'}
         </span>
       ),
     },

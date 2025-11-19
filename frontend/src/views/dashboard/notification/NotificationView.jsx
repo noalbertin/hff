@@ -4,7 +4,6 @@ import {
   Box,
   Grid,
   Typography,
-  Paper,
   Chip,
   Card,
   CardContent,
@@ -17,8 +16,6 @@ import {
   TableHead,
   TableRow,
   Button,
-  Menu,
-  MenuItem,
   Tooltip,
   Snackbar,
   Alert,
@@ -42,6 +39,7 @@ import EngineeringIcon from '@mui/icons-material/Engineering'
 import api from '../../../utils/axios'
 import ConfirmationDialog from '../../../components/ui/ConfirmationDialog'
 import { useAuthStore, selectUser } from '../../../store/auth'
+import { refreshNotifications } from '../../../layouts/Sidebar'
 
 const NotificationView = () => {
   const navigate = useNavigate()
@@ -111,6 +109,7 @@ const NotificationView = () => {
       await api.put(`/notifications/${id}/read`)
       fetchNotifications()
       fetchStatistics()
+      refreshNotifications()
     } catch (error) {
       console.error('Erreur marquage:', error)
     }
@@ -121,6 +120,7 @@ const NotificationView = () => {
       await api.put('/notifications/read-all')
       fetchNotifications()
       fetchStatistics()
+      refreshNotifications()
       setSnackbarMessage('Toutes les notifications marquées comme lues')
       setSnackbarSeverity('success')
       setOpenSnackbar(true)
@@ -142,6 +142,7 @@ const NotificationView = () => {
       await api.delete(`/notifications/${notifToDelete.id_notification}`)
       await fetchNotifications()
       await fetchStatistics()
+      refreshNotifications()
       setOpenDialog(false)
       setSnackbarMessage('Notification supprimée avec succès')
       setSnackbarSeverity('success')

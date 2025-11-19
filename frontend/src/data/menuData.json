@@ -24,11 +24,6 @@
         "link": "/flotte",
         "submenu": [
           {
-            "text": "Vue d'ensemble",
-            "available": true,
-            "link": "/flotte"
-          },
-          {
             "text": "Flotte",
             "available": true,
             "link": "/flotte/ajout-flotte"
@@ -42,6 +37,11 @@
             "text": "Opérateurs",
             "available": true,
             "link": "/flotte/operateurs"
+          },
+          {
+            "text": "Vue d'ensemble",
+            "available": true,
+            "link": "/flotte"
           }
         ]
       },
