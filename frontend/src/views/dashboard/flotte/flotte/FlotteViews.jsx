@@ -234,12 +234,12 @@ const FlotteViews = () => {
       console.log('Created:', data)
       await fetchFlotte()
       setOpenCreateModal(false)
-      setSnackbarMessage('Maintenance préventive enregistrée avec succès')
+      setSnackbarMessage('Flotte enregistrée avec succès')
       setSnackbarSeverity('success')
       setOpenSnackbar(true)
     } catch (error) {
       console.error("Erreur lors de l'enregistrement:", error)
-      setSnackbarMessage("Impossible d'enregistrer la maintenance")
+      setSnackbarMessage("Impossible d'enregistrer flotte")
       setSnackbarSeverity('error')
       setOpenSnackbar(true)
     }
@@ -260,7 +260,7 @@ const FlotteViews = () => {
       setOpenSnackbar(true)
     } catch (error) {
       console.error('Erreur lors de la modification:', error)
-      setSnackbarMessage('Impossible de modifier la maintenance')
+      setSnackbarMessage('Impossible de modifier Flotte')
       setSnackbarSeverity('error')
       setOpenSnackbar(true)
     }
@@ -274,13 +274,13 @@ const FlotteViews = () => {
       console.log('Flotte supprimée:', flotteToDelete)
       await fetchFlotte()
       setOpenDialog(false)
-      setSnackbarMessage('Entrée de flotte supprimée avec succès')
+      setSnackbarMessage('Flotte supprimée avec succès')
       setSnackbarSeverity('success')
       setOpenSnackbar(true)
     } catch (error) {
       console.error('Erreur lors de la suppression:', error)
       setOpenDialog(false)
-      setSnackbarMessage("Impossible de supprimer l'entrée")
+      setSnackbarMessage("Impossible de supprimer flotte")
       setSnackbarSeverity('error')
       setOpenSnackbar(true)
     }
