@@ -280,7 +280,7 @@ const FlotteViews = () => {
     } catch (error) {
       console.error('Erreur lors de la suppression:', error)
       setOpenDialog(false)
-      setSnackbarMessage("Impossible de supprimer flotte")
+      setSnackbarMessage('Impossible de supprimer flotte')
       setSnackbarSeverity('error')
       setOpenSnackbar(true)
     }
